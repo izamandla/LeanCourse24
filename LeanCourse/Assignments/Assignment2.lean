@@ -3,7 +3,6 @@ import Mathlib.Data.Complex.Exponential
 open Real
 
 /-
-
 * From Mathematics in Lean https://leanprover-community.github.io/mathematics_in_lean
   Read chapter 2, sections 2, 3, 4 and 5
   Read chapter 3, sections 1, 4.
