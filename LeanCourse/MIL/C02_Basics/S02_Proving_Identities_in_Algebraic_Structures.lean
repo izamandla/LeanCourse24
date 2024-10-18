@@ -72,17 +72,19 @@ theorem zero_mul (a : R) : 0 * a = 0 := by
   rw[add_right_cancel h]
 
 theorem neg_eq_of_add_eq_zero {a b : R} (h : a + b = 0) : -a = b := by
-  sorry
+  rw[← add_neg_cancel_right b a, add_comm b a, h, zero_add]
 
 theorem eq_neg_of_add_eq_zero {a b : R} (h : a + b = 0) : a = -b := by
-  sorry
+  rw[← add_neg_cancel_right a b, h, zero_add]
 
 theorem neg_zero : (-0 : R) = 0 := by
   apply neg_eq_of_add_eq_zero
   rw [add_zero]
 
 theorem neg_neg (a : R) : - -a = a := by
-  sorry
+  apply neg_eq_of_add_eq_zero
+  rw[add_comm, add_right_neg]
+
 
 end MyRing
 
@@ -105,13 +107,16 @@ namespace MyRing
 variable {R : Type*} [Ring R]
 
 theorem self_sub (a : R) : a - a = 0 := by
-  sorry
+  have h : a - a = a + -a := by
+    apply sub_eq_add_neg
+  rw[h, add_comm, neg_add_cancel]
 
 theorem one_add_one_eq_two : 1 + 1 = (2 : R) := by
   norm_num
 
 theorem two_mul (a : R) : 2 * a = a + a := by
-  sorry
+  rw[← one_add_one_eq_two, add_mul, one_mul]
+
 
 end MyRing
 
@@ -133,14 +138,19 @@ variable {G : Type*} [Group G]
 
 namespace MyGroup
 
+
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   sorry
 
 theorem mul_one (a : G) : a * 1 = a := by
-  sorry
+  rw[← inv_mul_cancel a, ← mul_assoc, mul_inv_cancel, one_mul ]
 
 theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  sorry
+  have h : (a * b)⁻¹ * (a * b) = b⁻¹ * a⁻¹ * a * b := by
+    rw[inv_mul_cancel, mul_assoc b⁻¹ , inv_mul_cancel,mul_assoc]
+    rw[one_mul, inv_mul_cancel]
+  rw[← one_mul (a * b)⁻¹, ← inv_mul_cancel (a * b), h, mul_assoc (b⁻¹ * a⁻¹)]
+  rw[ mul_assoc, mul_inv_cancel, mul_one ]
 
 end MyGroup
 

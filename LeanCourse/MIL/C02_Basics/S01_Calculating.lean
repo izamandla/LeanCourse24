@@ -95,15 +95,6 @@ example : (a + b) * (a + b) = a * a + 2 * (a * b) + b * b :=
     _ = a * a + 2 * (a * b) + b * b := by
       rw [mul_comm b a, ← two_mul]
 
-example : (a + b) * (a + b) = a * a + 2 * (a * b) + b * b :=
-  calc
-    (a + b) * (a + b) = a * a + b * a + (a * b + b * b) := by
-      sorry
-    _ = a * a + (b * a + a * b) + b * b := by
-      sorry
-    _ = a * a + 2 * (a * b) + b * b := by
-      sorry
-
 end
 
 -- Try these. For the second, use the theorems listed underneath.
@@ -118,9 +109,9 @@ example : (a + b) * (c + d) = a * c + a * d + b * c + b * d := by
 example : (a + b) * (c + d) = a * c + a * d + b * c + b * d :=
   calc
     (a + b) * (c + d) = a * (c + d) + b * (c + d) := by
-      sorry
-      = a *c + a * d + b* c + b * d := by
-      sorry
+      rw[add_mul]
+    _ = a *c + a * d + b* c + b * d := by
+      rw[mul_add, mul_add,← add_assoc]
 
 
 
@@ -128,9 +119,9 @@ example (a b : ℝ) : (a + b) * (a - b) = a ^ 2 - b ^ 2 := by
   rw[add_mul, mul_sub, mul_sub]
   rw[add_sub]
   rw[mul_comm a b]
-  --rw[← add_assoc (a * a)]
   rw[← pow_two a, ← pow_two b]
-  sorry
+  rw[add_comm, add_sub, add_comm, ← add_sub, sub_self, add_zero]
+
 
 
 
