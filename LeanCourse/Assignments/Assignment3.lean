@@ -43,12 +43,7 @@ example {α : Type*} {p : α → Prop} {r : Prop} :
 /- Prove the following with basic tactics, without using `tauto` or lemmas from Mathlib. -/
 example {α : Type*} {p : α → Prop} {r : Prop} :
     (∃ x, p x ∧ r) ↔ ((∃ x, p x) ∧ r) := by {
-  let R := {x : α | x ∉ f x}
-  -- Use surjectivity to obtain `y : α` such that `f y = R`
-  --rcases h R with ⟨y, hy⟩
-  -- Show that this leads to a contradiction
-  --have hR : y ∈ R ↔ y ∉ R
-  --exact hR.1 hR.2
+ sorry
   }
 
 /- Prove the following without using `push_neg` or lemmas from Mathlib.
@@ -108,7 +103,16 @@ end Set
 /- Prove the following with basic tactics, without using `tauto` or lemmas from Mathlib. -/
 lemma exists_distributes_over_or {α : Type*} {p q : α → Prop} :
     (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) := by {
-  sorry
+  intro h
+  intro hp
+  cases h
+  { rintro ⟨x, h⟩
+    cases h
+    { left, use x, exact hp },
+    { right, use x, exact hq } },
+  { rintro (⟨x, hp⟩ | ⟨x, hq⟩),
+    { use x, left, exact hp },
+    { use x, right, exact hq } }
   }
 
 section Surjectivity
@@ -126,7 +130,18 @@ example : (g ∘ f) x = g (f x) := by simp
 
 lemma surjective_composition (hf : SurjectiveFunction f) :
     SurjectiveFunction (g ∘ f) ↔ SurjectiveFunction g := by {
-  sorry
+  intro h
+  cases h with h₁ h₂,
+  { -- (→) direction
+    intro hgf,
+    intro y,
+    obtain ⟨x, hx⟩ := hgf y,
+    exact ⟨f x, hx⟩ },
+  { -- (←) direction
+    intros hg y,
+    obtain ⟨x, hx⟩ := hf y,
+    obtain ⟨z, hz⟩ := hg x,
+    exact ⟨z, by rw [function.comp_apply, hx, hz]⟩ }
   }
 
 /- When composing a surjective function by a linear function
