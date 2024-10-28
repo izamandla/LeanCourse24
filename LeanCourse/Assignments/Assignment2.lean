@@ -19,17 +19,26 @@ open Real
 /-! # Exercises to practice. -/
 
 example {a b : ℝ} (h1 : a + 2 * b = 4) (h2 : a - b = 1) : a = 2 := by {
-  sorry
+  linarith
   }
 
 example {u v : ℝ} (h1 : u + 1 = v) : u ^ 2 + 3 * u + 1 = v ^ 2 + v - 1 := by {
-  sorry
+  rw[← h1]
+  linarith
   }
 
 example (a b c x y : ℝ) (h : a ≤ b) (h2 : b < c) (h3 : x ≤ y) :
     a + exp x ≤ c + exp (y + 2) := by {
-  sorry
+    have h11 : x ≤ y + 2 := by
+      exact
+    have h12 : exp x ≤ exp (y + 2) := by
+      rw[exp_le_exp]
+      exact
+    have h13: a < c := by
+      apply lt_of_le_of_lt h h2
+    sorry
   }
+
 
 /-- Prove the following using `linarith`.
 Note that `linarith` cannot deal with implication or if and only if statements. -/
@@ -131,7 +140,19 @@ end PartialOrder
 
 /- Prove this using a calculation. -/
 lemma exercise_calc_real {t : ℝ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by {
-  sorry
+  calc
+    t ^ 2 - 3 * t - 17 = t ^ 2 - 4 * t + t -4  - 18 + 5 := by
+      linarith
+    _= (t - 4)*(t + 1) - 18 + 5 := by
+      rw[pow_two t, ← sub_mul, ← add_sub, ← mul_one (t-4)]
+      rw[ mul_assoc,one_mul t, ← mul_add (t - 4), mul_one ]
+  have h1 : t - 4 ≥ 6 := by
+    linarith
+  have h2 : t + 1 ≥ 11 := by
+    linarith
+  have h3 : (t - 4)*(t + 1) ≥ 66 := by
+    sorry
+  linarith
   }
 
 /- Prove this using a calculation.

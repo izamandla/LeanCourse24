@@ -22,13 +22,16 @@ open Real Function Set Nat
 
 
 example {p : ℝ → Prop} (h : ∀ x, p x) : ∃ x, p x := by {
-  sorry
+  use 0
+  exact h 0
   }
 
 
 example {α : Type*} {p q : α → Prop} (h : ∀ x, p x → q x) :
     (∃ x, p x) → (∃ x, q x) := by {
-  sorry
+  intro hpq
+  rcases hpq with ⟨x, px⟩
+  exact ⟨x, h x px⟩
   }
 
 /- Prove the following with basic tactics, without using `tauto` or lemmas from Mathlib. -/
@@ -40,7 +43,12 @@ example {α : Type*} {p : α → Prop} {r : Prop} :
 /- Prove the following with basic tactics, without using `tauto` or lemmas from Mathlib. -/
 example {α : Type*} {p : α → Prop} {r : Prop} :
     (∃ x, p x ∧ r) ↔ ((∃ x, p x) ∧ r) := by {
-  sorry
+  let R := {x : α | x ∉ f x}
+  -- Use surjectivity to obtain `y : α` such that `f y = R`
+  --rcases h R with ⟨y, hy⟩
+  -- Show that this leads to a contradiction
+  --have hR : y ∈ R ↔ y ∉ R
+  --exact hR.1 hR.2
   }
 
 /- Prove the following without using `push_neg` or lemmas from Mathlib.

@@ -138,8 +138,9 @@ variable {G : Type*} [Group G]
 
 namespace MyGroup
 
-
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
+  --have h1 : a⁻¹ * a * a⁻¹ = a⁻¹ := by
+    --rw[inv_mul_cancel, one_mul]
   sorry
 
 theorem mul_one (a : G) : a * 1 = a := by
