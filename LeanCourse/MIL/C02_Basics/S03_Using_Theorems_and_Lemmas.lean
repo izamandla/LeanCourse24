@@ -44,7 +44,11 @@ example (x : ℝ) : x ≤ x :=
 
 -- Try this.
 example (h₀ : a ≤ b) (h₁ : b < c) (h₂ : c ≤ d) (h₃ : d < e) : a < e := by
-  sorry
+  apply lt_of_le_of_lt h₀
+  apply lt_trans h₁
+  apply lt_of_le_of_lt h₂ h₃
+
+
 
 example (h₀ : a ≤ b) (h₁ : b < c) (h₂ : c ≤ d) (h₃ : d < e) : a < e := by
   linarith
@@ -86,14 +90,22 @@ example (h₀ : a ≤ b) (h₁ : c < d) : a + exp c + e < b + exp d + e := by
     apply exp_lt_exp.mpr h₁
   apply le_refl
 
-example (h₀ : d ≤ e) : c + exp (a + d) ≤ c + exp (a + e) := by sorry
+example (h₀ : d ≤ e) : c + exp (a + d) ≤ c + exp (a + e) := by
+  apply add_le_add_left
+  rw[exp_le_exp]
+  apply add_le_add_left
+  exact h₀
 
 example : (0 : ℝ) < 1 := by norm_num
 
 example (h : a ≤ b) : log (1 + exp a) ≤ log (1 + exp b) := by
-  have h₀ : 0 < 1 + exp a := by sorry
-  apply log_le_log h₀
-  sorry
+  apply log_le_log
+  apply add_pos
+  · norm_num
+  · apply exp_pos
+  apply add_le_add_left
+  rw[exp_le_exp]
+  exact h
 
 example : 0 ≤ a ^ 2 := by
   -- apply?

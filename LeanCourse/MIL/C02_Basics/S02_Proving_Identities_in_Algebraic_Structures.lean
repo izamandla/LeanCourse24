@@ -33,6 +33,16 @@ example (hyp : c = d * a + b) (hyp' : b = a * d) : c = 2 * a * d := by
 
 end
 
+
+namespace gigamasterfasterRing
+
+variable {R : Type*} [Ring R]
+
+theorem add_zero (a b : R) : a + b = b + a := by rw [add_comm]
+
+end gigamasterfasterRing
+
+
 namespace MyRing
 variable {R : Type*} [Ring R]
 
@@ -41,7 +51,7 @@ theorem add_zero (a : R) : a + 0 = a := by rw [add_comm, zero_add]
 theorem add_right_neg (a : R) : a + -a = 0 := by rw [add_comm, neg_add_cancel]
 
 #check MyRing.add_zero
-#check add_zero
+#check gigamasterfasterRing.add_zero
 
 end MyRing
 
