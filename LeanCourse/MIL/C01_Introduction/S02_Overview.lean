@@ -18,6 +18,11 @@ def FermatLastTheorem :=
 
 #check FermatLastTheorem
 
+def kwa :=
+  2+2=3
+
+#check kwa
+
 -- These are proofs of propositions.
 theorem easy : 2 + 2 = 4 :=
   rfl
@@ -52,3 +57,10 @@ example : ∀ m n : Nat, Even n → Even (m * n) := by
 
 example : ∀ m n : Nat, Even n → Even (m * n) := by
   intros; simp [*, parity_simps]
+
+def dev3 (n : ℕ): Prop :=
+ ∃ k, n = 3 * k
+
+
+example :  ∀ m n : Nat, dev3 n → dev3 (m * n) := by
+  rintro m n ⟨k,hk⟩; use m * k; rw[hk]; ring
