@@ -30,7 +30,17 @@ variable {α β γ ι : Type*} (f : α → β) (x : α) (s : Set α)
 
 /- Prove this equivalence for sets. -/
 example : s = univ ↔ ∀ x : α, x ∈ s := by {
-  sorry
+  constructor
+  · rintro rfl
+    intro x
+    exact mem_univ x
+  · intro h
+    ext x
+    constructor
+    · intro hx
+      exact mem_univ x
+    · intro hx
+      exact h x
   }
 
 
@@ -39,6 +49,7 @@ You will need to use `by_contra` in the proof. -/
 lemma exercise3_1 (p : Prop) : p ∨ ¬ p := by {
   sorry
   }
+
 
 /- `α × β` is the cartesian product of the types `α` and `β`.
 Elements of the cartesian product are denoted `(a, b)`, and the projections are `.1` and `.2`.
@@ -57,7 +68,11 @@ example (a a' : α) (b b' : β) (ha : a = a') (hb : b = b') : (a, b) = (a', b') 
 
 /- To practice, show the equality of the following pair. What is the type of these pairs? -/
 example (x y : ℝ) : (123 + 32 * 3, (x + y) ^ 2) = (219, x ^ 2 + 2 * x * y + y ^ 2) := by {
-  sorry
+  have h1 : 123 + 32 * 3 = 219 := by
+   norm_num
+  have h2 : (x + y) ^ 2 = x ^ 2 + 2 * x * y + y ^ 2 := by
+   ring
+  rw [h1, h2]
   }
 
 /- `A ≃ B` means that there is a bijection from `A` to `B`.
@@ -96,7 +111,10 @@ produces a sequence that converges to the same value. -/
 lemma sequentialLimit_reindex {s : ℕ → ℝ} {r : ℕ → ℕ} {a : ℝ}
     (hs : SequentialLimit s a) (hr : ∀ m : ℕ, ∃ N : ℕ, ∀ n ≥ N, r n ≥ m) :
     SequentialLimit (s ∘ r) a := by {
+  rintro ε h
+  simp
   sorry
+
   }
 
 
@@ -115,7 +133,7 @@ lemma sequentialLimit_squeeze {s₁ s₂ s₃ : ℕ → ℝ} {a : ℝ}
 /- Prove this without using lemmas from Mathlib. -/
 lemma image_and_intersection {α β : Type*} (f : α → β) (s : Set α) (t : Set β) :
     f '' s ∩ t = f '' (s ∩ f ⁻¹' t) := by {
-  sorry
+    sorry
   }
 
 /- Prove this by finding relevant lemmas in Mathlib. -/
@@ -147,9 +165,12 @@ lemma set_bijection_of_partition {f : α → γ} {g : β → γ} (hf : Injective
     (h1 : range f ∩ range g = ∅) (h2 : range f ∪ range g = univ) :
     ∃ (L : Set α × Set β → Set γ) (R : Set γ → Set α × Set β), L ∘ R = id ∧ R ∘ L = id := by {
   -- h1' and h1'' might be useful later as arguments of `simp` to simplify your goal.
-  have h1' : ∀ x y, f x ≠ g y := by sorry
-  have h1'' : ∀ y x, g y ≠ f x := by sorry
-  have h2' : ∀ x, x ∈ range f ∪ range g := by sorry
+  have h1' : ∀ x y, f x ≠ g y := by
+    sorry
+  have h1'' : ∀ y x, g y ≠ f x := by
+    sorry
+  have h2' : ∀ x, x ∈ range f ∪ range g := by
+    simp [h2]
   let L : Set α × Set β → Set γ := sorry
   let R : Set γ → Set α × Set β := sorry
   sorry
