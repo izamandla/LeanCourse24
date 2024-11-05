@@ -39,6 +39,8 @@ Some useful tactics when dealing with numbers:
 -/
 
 example : 2 ^ 3 + 17 = 300 / 12 := by norm_num
+example : Nat.Prime 13 := by
+  norm_num
 example (x : ℝ) : x + 5 + 3 = x + 8 := by
   rw [add_assoc]
   norm_num
@@ -66,6 +68,7 @@ This is division rounded down and truncated subtraction.
 #eval 7 - 6
 #eval 7 - 7
 #eval 7 - 8
+#check 7 - 8
 
 /- When using subtraction and division, it is better to do the calculation in the rationals or reals.
 We write `(... : ℚ)` to tell Lean that the `...` should be interpreted as a rational number.
@@ -77,8 +80,10 @@ In the infoview (right half of your screen), these coercions are denoted with `�
 section
 #eval (12 : ℚ) / 15
 #eval (7 : ℤ) - 8
+#check (7 : ℤ) - 8
 variable (n : ℕ)
 #check (n : ℚ)
+#check (n : ℝ)
 #check (n + 1 : ℚ)
 #check ((n + 1 : ℕ) : ℚ)
 #check ((n + 1 : ℤ) : ℚ)
@@ -99,11 +104,14 @@ since `↑n - ↑m = ↑(n - m)` and `↑n / ↑m = ↑(n / m)` are not always t
 example (n : ℕ) : ((n + 1 : ℤ) : ℚ) = n + 1 := by norm_cast
 
 example (n m : ℕ) (h : (n : ℚ) + 1 ≤ m) : (n : ℝ) + 1 ≤ m := by {
-  sorry
+  norm_cast
+  norm_cast at h
   }
 
 example (n m : ℕ) (h : n = m * m + 2) : (n : ℝ) - 3 = (m + 1) * (m - 1) := by {
-  sorry
+  rw [h]
+  push_cast
+  ring
   }
 
 
@@ -124,8 +132,6 @@ def fac : ℕ → ℕ
 
 
 
-
-
 lemma fac_zero : fac 0 = 1 := rfl
 
 lemma fac_succ (n : ℕ) : fac (n + 1) = (n + 1) * fac n := rfl
@@ -135,7 +141,14 @@ example : fac 4 = 24 := rfl
 #eval fac 100
 
 theorem fac_pos (n : ℕ) : 0 < fac n := by {
-  sorry
+  induction n with
+  | zero =>
+    unfold fac
+    norm_num
+  | succ n ih =>
+    rw[fac]
+    --unfold fac
+    positivity
   }
 
 open BigOperators Finset
@@ -152,6 +165,7 @@ example (f : ℕ → ℝ) (n : ℕ) : ∑ i in range (n + 1), f i = (∑ i in ra
 It's type is `Finset ℕ`, which is a set
 -/
 #check Finset.range
+#check Finset ℕ
 
 /- The following result is denoted using division of natural numbers.
 This is defined as division, rounded down.
@@ -160,7 +174,13 @@ This makes it harder to prove things about it, so we generally avoid using it
 
 
 example (n : ℕ) : ∑ i in range (n + 1), (i : ℚ) = n * (n + 1) / 2 := by {
-  sorry
+  induction n with
+  | zero =>
+  simp
+  | succ n ih =>
+  rw[Finset.sum_range_succ,ih]
+  field_simp
+  ring
   }
 
 /- Some other useful induction principles -/
@@ -171,7 +191,11 @@ example (n : ℕ) : ∑ i in range (n + 1), (i : ℚ) = n * (n + 1) / 2 := by {
 /- We can use other induction principles with `induction ... using ... with` -/
 
 theorem fac_dvd_fac (n m : ℕ) (h : n ≤ m) : fac n ∣ fac m := by {
-  sorry
+  induction m, h using Nat.le_induction with
+  | base => rfl
+  | succ k hk ih =>
+  rw[fac]
+  exact Dvd.dvd.mul_left ih (k+1)
   }
 
 
@@ -189,10 +213,9 @@ For example in the structure below `Point` bundles three coordinates together.
   y : ℝ
   z : ℝ
 
+
+
 #check Point
-
-
-
 
 section
 
@@ -215,8 +238,8 @@ end
 
 example (a b : Point) (hx : a.x = b.x) (hy : a.y = b.y) (hz : a.z = b.z) :
     a = b := by
-  ext
-  all_goals assumption
+  ext -- dlatego dodane jest to @[ext] na początku struktury -> bez tego nie mamay tego lematu
+  all_goals assumption --aplikuje wszystkie założenia do goali
 
 example (a b : Point) (hx : a.x = b.x) (hy : a.y = b.y) (hz : a.z = b.z) :
     a = b := by
@@ -308,6 +331,7 @@ protected lemma add_comm (a b : Point) :
   add a b = add b a := by simp [add, add_comm]
 
 #check Point.add_comm
+#check add_comm
 
 /- We can also state that we want to use the `+` notation here.
 In that case, we have to write lemmas stating how `+` computes. -/
@@ -319,7 +343,8 @@ instance : Add Point := ⟨add⟩
 @[simp] lemma add_z (a b : Point) : (a + b).z = a.z + b.z := by rfl
 
 example (a b : Point) : a + b = b + a := by {
-  sorry
+  ext
+  all_goals simp
   }
 
 end Point
