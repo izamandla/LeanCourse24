@@ -1,11 +1,14 @@
 import Mathlib.Data.Nat.GCD.Basic
 import LeanCourse.Common
 
+#check Nat
+
 example (n : Nat) : n.succ ≠ Nat.zero :=
   Nat.succ_ne_zero n
 
 example (m n : Nat) (h : m.succ = n.succ) : m = n :=
   Nat.succ.inj h
+
 
 def fac : ℕ → ℕ
   | 0 => 1
@@ -48,7 +51,16 @@ theorem dvd_fac {i n : ℕ} (ipos : 0 < i) (ile : i ≤ n) : i ∣ fac n := by
 theorem pow_two_le_fac (n : ℕ) : 2 ^ (n - 1) ≤ fac n := by
   rcases n with _ | n
   · simp [fac]
+  induction' n with n ih
+  · simp[fac]
+  norm_num
+  norm_num at ih
+  rw [pow_succ 2 n]
+  unfold fac
+  ring
   sorry
+
+
 section
 
 variable {α : Type*} (s : Finset ℕ) (f : ℕ → ℕ) (n : ℕ)
