@@ -193,7 +193,22 @@ Then state and prove the lemma that for any element of a strict bipointed type w
 open Finset in
 lemma sum_cube_eq_sq_sum (n : ℕ) :
     (∑ i in range (n + 1), (i : ℚ) ^ 3) = (∑ i in range (n + 1), (i : ℚ)) ^ 2 := by {
+  have h1 (n : ℕ) : ∑ i in range (n + 1), i = n * (n + 1) / 2 := by
+    symm; apply Nat.div_eq_of_eq_mul_right (by norm_num : 0 < 2)
+    induction' n with n ih
+    · simp
+    rw [Finset.sum_range_succ, mul_add 2, ← ih]
+    ring
+  have h2 (n : ℕ): (∑ i in range (n + 1), (i : ℚ) ^ 3) = (n * (n + 1) / 2)^2 := by
+    induction' n with n hi
+    · simp
+    rw[Finset.sum_range_succ, hi]
+    ring
+    field_simp
+    ring
+  rw[h2]
   sorry
+
   }
 
 /-
@@ -206,6 +221,11 @@ original sequence.
 lemma disjoint_unions {ι α : Type*} [LinearOrder ι] [wf : WellFoundedLT ι] (A C : ι → Set α)
   (hC : ∀ i, C i = A i \ ⋃ j < i, A j) : Pairwise (Disjoint on C) ∧ ⋃ i, C i = ⋃ i, A i := by {
   have h := wf.wf.has_min -- this hypothesis allows you to use well-orderedness
+  constructor
+  · sorry
+  ext x
+  constructor
+  · sorry
   sorry
   }
 
@@ -247,6 +267,8 @@ lemma prime_of_prime_two_pow_sub_one (n : ℕ) (hn : Nat.Prime (2 ^ n - 1)) : Na
   sorry
   }
 
+
+ --MOJA CZĘŚĆ
 /- Prove that for positive `a` and `b`, `a^2 + b` and `b^2 + a` cannot both be squares.
 Prove it on paper first! -/
 lemma not_isSquare_sq_add_or (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
