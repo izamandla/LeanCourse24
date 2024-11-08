@@ -273,7 +273,21 @@ lemma prime_of_prime_two_pow_sub_one (n : ℕ) (hn : Nat.Prime (2 ^ n - 1)) : Na
 Prove it on paper first! -/
 lemma not_isSquare_sq_add_or (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
     ¬ IsSquare (a ^ 2 + b) ∨ ¬ IsSquare (b ^ 2 + a) := by {
-  sorry
+  rw[IsSquare, IsSquare]
+  by_contra heq
+  push_neg at heq
+  cases le_or_lt a b with
+  | inl h1 =>
+    apply LE.le.lt_or_eq at h1
+    cases h1 with
+    | inl h =>
+      have hab : a^2 + b < (b+1)^2 := by
+        calc a ^ 2 + b < b ^ 2 + b:= by sorry
+        _= b*(b-1) := sorry
+        _<(b+1)^2 := sorry
+      --apply Nat.not_exists_sq
+    inr h => sorry
+  | inr h2 => sorry
   }
 
 
