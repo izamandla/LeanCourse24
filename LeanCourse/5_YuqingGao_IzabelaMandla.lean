@@ -449,11 +449,19 @@ lemma not_isSquare_sq_add_or (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
       rw[IsSquare, IsSquare]
       by_contra heq
       push_neg at heq
+      let r := (a + b^2)
+      let r' := b + a^2
       rcases le_or_lt a b with hab | hba
       · apply LE.le.lt_or_eq at hab
         rcases hab with h1 | h2
-        · have h : a + b^2 < (b+1)^2 := by sorry
+        · have h : a + b^2 < (b+1)^2 := by
+            calc a + b^2 < b + b ^ 2:= by exact Nat.add_lt_add_right h1 (b ^ 2)
+              _<(b+1)^2 := by
+                ring
+                simp
+                linarith
       --apply Nat.not_exists_sq
+
 
 
   }
