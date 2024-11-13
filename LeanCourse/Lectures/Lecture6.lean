@@ -48,7 +48,7 @@ Lean has a hierarchy of universes. -/
 
 universe u v
 variable (n : ℕ)
--- #check Type n -- error
+--#check Type n -- error
 #check Type u
 #check Type (v + 3)
 #check Type (max u v)

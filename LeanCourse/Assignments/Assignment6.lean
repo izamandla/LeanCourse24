@@ -105,7 +105,14 @@ instance : MulAction G (Subgroup G) := sorry
 Let's define the smallest equivalence relation on a type `X`. -/
 def myEquivalenceRelation (X : Type*) : Setoid X where
   r x y := x = y
-  iseqv := sorry -- Here you have to show that this is an equivalence.
+  iseqv := {
+    refl := by
+      simp
+    symm := by
+      simp
+    trans := by
+      simp
+  } -- Here you have to show that this is an equivalence.
                  -- If you click on the `sorry`, a lightbulb will appear to give the fields
 
 /- This simp-lemma will simplify `x ≈ y` to `x = y` in the lemma below. -/
@@ -123,7 +130,8 @@ Use `Quotient.ind` to prove something for all elements of a quotient.
 You can use this using the induction tactic: `induction x using Quotient.ind; rename_i x`.
 -/
 def quotient_equiv_subtype (X : Type*) :
-    Quotient (myEquivalenceRelation X) ≃ X := sorry
+    Quotient (myEquivalenceRelation X) ≃ X := by
+    sorry
 
 
 
@@ -137,12 +145,20 @@ precisely when one element is in the orbit of the other. -/
 def orbitOf (x : X) : Set X := range (fun g : G ↦ g • x)
 
 lemma orbitOf_eq_iff (x y : X) : orbitOf G x = orbitOf G y ↔ y ∈ orbitOf G x := by {
+  have h : y ∈ orbitOf G y := by
+    sorry
+  constructor
+  sorry
   sorry
   }
 
 /- Define the stabilizer of an element `x` as the subgroup of elements
 `g ∈ G` that satisfy `g • x = x`. -/
-def stabilizerOf (x : X) : Subgroup G := sorry
+def stabilizerOf (x : X) : Subgroup G :=
+{ carrier := {g : G | g • x = x}
+  one_mem' := by sorry
+  mul_mem' := by intro a b ha hb; sorry
+  inv_mem' := by intro a ha; sorry }
 
 -- This is a lemma that allows `simp` to simplify `x ≈ y` in the proof below.
 @[simp] theorem leftRel_iff {x y : G} {s : Subgroup G} :
