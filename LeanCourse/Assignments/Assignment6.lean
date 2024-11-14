@@ -130,10 +130,22 @@ Use `Quotient.ind` to prove something for all elements of a quotient.
 You can use this using the induction tactic: `induction x using Quotient.ind; rename_i x`.
 -/
 def quotient_equiv_subtype (X : Type*) :
-    Quotient (myEquivalenceRelation X) ≃ X := by
-    sorry
-
-
+    Quotient (myEquivalenceRelation X) ≃ X :=
+    { toFun := by
+        apply Quotient.lift
+        simp
+        exact fun a ↦ a
+      invFun := by
+        apply Quotient.mk
+      left_inv := by
+        intro q
+        induction q using Quotient.ind
+        apply Quotient.sound
+        exact rfl
+      right_inv := by
+        intro q
+        simp
+        }
 
 section GroupActions
 
