@@ -160,7 +160,8 @@ lemma orbitOf_eq_iff (x y : X) : orbitOf G x = orbitOf G y ↔ y ∈ orbitOf G x
   have h : y ∈ orbitOf G y := by
     sorry
   constructor
-  sorry
+  · intro h1
+    exact -- czy to działa???
   sorry
   }
 
