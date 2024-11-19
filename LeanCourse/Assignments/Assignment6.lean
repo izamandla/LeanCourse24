@@ -157,11 +157,15 @@ precisely when one element is in the orbit of the other. -/
 def orbitOf (x : X) : Set X := range (fun g : G ↦ g • x)
 
 lemma orbitOf_eq_iff (x y : X) : orbitOf G x = orbitOf G y ↔ y ∈ orbitOf G x := by {
-  have h : y ∈ orbitOf G y := by
-    sorry
   constructor
-  · intro h1
-    exact -- czy to działa???
+  intro h_1
+  rw[h_1]
+  use (1 : G)
+  exact one_smul G y
+  intro h_2
+  unfold orbitOf at h_2
+  --unfold Set.mem_range at h_2
+  --exact h_2
   sorry
   }
 
@@ -169,7 +173,7 @@ lemma orbitOf_eq_iff (x y : X) : orbitOf G x = orbitOf G y ↔ y ∈ orbitOf G x
 `g ∈ G` that satisfy `g • x = x`. -/
 def stabilizerOf (x : X) : Subgroup G :=
 { carrier := {g : G | g • x = x}
-  one_mem' := by sorry
+  one_mem' := by exact one_smul G x
   mul_mem' := by intro a b ha hb; sorry
   inv_mem' := by intro a ha; sorry }
 
