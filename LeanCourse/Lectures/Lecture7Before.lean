@@ -91,7 +91,7 @@ The natural number `Nat.choose n m` is coerced to an element of `R`
 using `Nat.cast`. -/
 example {R : Type*} [CommRing R] (x y : R) (n : ℕ) : (x + y) ^ n =
     ∑ m in Finset.range (n + 1), x ^ m * y ^ (n - m) * Nat.choose n m := by
-  exact?
+  exact add_pow x y n
 
 
 
@@ -101,7 +101,7 @@ example {R : Type*} [CommRing R] (x y : R) (n : ℕ) : (x + y) ^ n =
 /- We have a predicate `IsUnit` stating
 whether an element of the ring is a unit. -/
 example {R : Type*} [CommRing R] (x : R) :
-    IsUnit x ↔ ∃ y, x * y = 1 := by exact?
+    IsUnit x ↔ ∃ y, x * y = 1 := by exact isUnit_iff_exists_inv
 
 
 /- We can write `Rˣ` for the units of a ring
