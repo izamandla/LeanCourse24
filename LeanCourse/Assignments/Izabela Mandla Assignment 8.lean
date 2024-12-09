@@ -200,9 +200,27 @@ lemma technical_filter_exercise {ι α : Type*} {p : ι → Prop} {q : Prop} {a 
     (∀ᶠ i in L, p i ↔ q) ↔
     Tendsto (fun i ↦ if p i then a else b) L (if q then F else G) := by {
   have hab : a ≠ b
-  · sorry
+  · intro h_eq
+    sorry
   rw [tendsto_iff_eventually]
+  split_ifs with hq
+  simp only [hq]
+  simp
+  constructor
+  intro h1
   sorry
+  intro h2
+  apply Filter.Eventually.mono
+  exact h2 hbF
+  intro h3
+  sorry
+  constructor
+  intro h4
+  sorry
+  intro h5
+  by_contra h_contra
+  sorry
+
   }
 
 /- To be more concrete, we can use the previous lemma to prove the following.
