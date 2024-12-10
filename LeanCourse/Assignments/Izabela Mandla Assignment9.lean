@@ -77,10 +77,22 @@ lemma mono_exercise_part1 {f : α → α} (hf : Continuous f) (h2f : Injective f
   have h2 : f '' uIcc a x ⊆ f '' uIcc a b := by
     rw[uIcc_of_le hx, uIcc_of_le hab]
     exact image_mono h4
+  have h3 : f x ∈ f '' uIcc a b := by
+    refine (Injective.mem_set_image h2f).mpr ?_
+    exact
+  have h3' : f '' uIcc a b = uIcc (f a) (f b) := by
+    sorry
   have h5 : f x ∈ uIcc (f a) (f b) := by
     sorry
   sorry
-  apply lt_of_not_ge at h1
+  have h4x : Icc a b ⊆ Icc a x := by
+    refine (Icc_subset_Icc_iff hab).mpr ?_
+    exact
+  have h2x : f '' uIcc a b ⊆ f '' uIcc a x := by
+    rw[uIcc_of_le hx, uIcc_of_le hab]
+    sorry
+  have h5x : f b ∈ uIcc (f a) (f x) := by
+    sorry
   sorry
   }
 
@@ -180,21 +192,42 @@ variable (α : Type*) [ConditionallyCompleteLinearOrder α]
   [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] in
 lemma mono_exercise_part1_copy {f : α → α} (hf : Continuous f) (h2f : Injective f) {a b x : α}
     (hab : a ≤ b) (h2ab : f a < f b) (hx : a ≤ x) : f a ≤ f x := by {
-  /-by_contra h
-  apply lt_of_not_ge at h-/
-  have h1 : Monotone f ∨ Antitone f := by
+  by_contra h
+  apply lt_of_not_ge at h
+  have h3 : f x < f b := lt_trans h h2ab
+  /-have h4: f '' uIcc a b ∩ f '' uIcc a b = {a} := by
+    sorry -/
+  by_cases h1 : x ≤ b
+  have h4 : Icc a x ⊆ Icc a b := by
+    exact Icc_subset_Icc_right h1
+  have h2 : f '' uIcc a x ⊆ f '' uIcc a b := by
+    rw[uIcc_of_le hx, uIcc_of_le hab]
+    exact image_mono h4
+  have h3 : f x ∈ f '' uIcc a b := by
+    refine (Injective.mem_set_image h2f).mpr ?_
+    exact
+  have h3' : f '' uIcc a b = uIcc (f a) (f b) := by
     sorry
-  have h2 {x y : α}: f x ≤ f y ↔ x ≤ y := by
+  have h5 : f x ∈ uIcc (f a) (f b) := by
     sorry
-  rw[h2]
-  apply hx
+  sorry
+  have h4x : Icc a b ⊆ Icc a x := by
+    refine (Icc_subset_Icc_iff hab).mpr ?_
+    exact
+  have h2x : f '' uIcc a b ⊆ f '' uIcc a x := by
+    rw[uIcc_of_le hx, uIcc_of_le hab]
+    sorry
+  have h5x : f b ∈ uIcc (f a) (f x) := by
+    sorry
+  sorry
   }
- /- have h2 : Icc (f a) (f x) ⊆ f '' Icc a x := by
-      apply intermediate_value_Icc hx
-      sorry-/
+
 
 /- Prove the following using the change of variables theorem. -/
 lemma change_of_variables_exercise (f : ℝ → ℝ) :
     ∫ x in (0)..π, sin x * f (cos x) = ∫ y in (-1)..1, f y := by {
-  sorry
+  have h : ∀ x ∈ [0, π], HasDerivAt cos (-sin x) x := by
+    exact fun x a ↦ hasDerivAt_cos x
+  calc ∫ (x : ℝ) in 0 ..π, sin x * f (cos x) = ∫ (y : ℝ) in -1 ..1, f y := by sorry
+
   }
