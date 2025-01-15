@@ -30,7 +30,23 @@ def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
 def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
 
-#check SetDyadicIntervals
+
+--theorem that 2 dyadic intervals are disjoint or one is contained in another
+theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
+  (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
+  (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
+  (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
+  unfold dyadicInterval
+  by_cases hk : k = k'
+  rw[hk]
+  by_cases hn : n = n'
+  rw[hn]
+  simp
+  sorry
+  sorry
+
+
+
 
 -- Definition 1.2: Tile
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=
@@ -108,10 +124,21 @@ theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   walsh n x = ∏ m in binaryReoresentationSet n , rademacherFunction m x :=
   sorry
 
+theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
+  walsh N x = walsh M x * ∏ m in binaryReoresentationSet (N - (2^M)) , rademacherFunction m x :=
+  sorry
+
 
 -- Lemma 3.2: Writting the first sum using SetDyadicIntervals
-theorem walshHaarDecomposition (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
-  WalshFourierPartialSum f 2^M =
-  ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * walsh (2^M) y * (haarFunctionScaled k y) ) * walsh (2^M) x (haarFunctionScaled k x) :=
+theorem lemma1_1 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
+  WalshFourierPartialSum f (2^M) x =
+  ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * walsh (2^M) y * (haarFunctionScaled M k y)  * walsh (2^M) x  * (haarFunctionScaled M k x) ):=
   sorry
--- ∑ k in Finset.range (2^M),(∫ y in Set.Icc 0 1, f y * walsh N y * (haarFunctionScaled k y) ) * walsh N x (haarFunctionScaled k x) :=
+
+theorem lemma1_2 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
+  WalshFourierPartialSum f (2^M) x =
+  ∑ k in Finset.range (2^M),(∫ y in Set.Icc 0 1, f y * walsh N y * (haarFunctionScaled M k y) ) * walsh N x * (haarFunctionScaled M k x) := by
+  rw [lemma1_1]
+  sorry
+  sorry
+  sorry
