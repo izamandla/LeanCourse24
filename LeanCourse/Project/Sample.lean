@@ -29,7 +29,7 @@ def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
 
 def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
-
+--tak se bo zdefiniowałam SetDyadicIntervals i go nie używam
 
 --theorem that 2 dyadic intervals are disjoint or one is contained in another
 theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
@@ -202,29 +202,37 @@ def haarFunctionScaled (k n : ℕ) (x : ℝ) : ℝ :=
 
 -- Definition 1.7 of the Rademacher function
 def rademacherFunction (n : ℕ) (t : ℝ) : ℝ :=
-  sorry
+  2^(- n / 2 : ℝ ) * ∑ k in Finset.range n, haarFunctionScaled n k t
+--- changed so it comes from relation to haar functions
 
 -- binary representation
-def binaryReoresentationSet (n : ℕ) : Finset ℕ :=
+def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
   Finset.filter (λ m => Nat.testBit n m) (Finset.range (n + 1))
 
--- Theorem 1: Rademacher function in terms of Haar functions
-theorem rademacherHaarRelation (n : ℕ) (t : ℝ) :
-  rademacherFunction n t = 2^(- n / 2 : ℝ ) * ∑ k in Finset.range n, haarFunctionScaled n k t :=
-  sorry
---tak se bo zdefiniowałam SetDyadicIntervals i go nie używam
+theorem factaboutbinaryRepresentationSet (N M : ℕ) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
+    sorry
+
 
 -- Theorem 2: Walsh function in terms of Rademacher functions
 
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
-  walsh n x = ∏ m in binaryReoresentationSet n , rademacherFunction m x :=
+  walsh n x = ∏ m in binaryRepresentationSet n , rademacherFunction m x := by
+  sorry
+
+theorem differentwalshRademacherRelation (n : ℕ) (x : ℝ) :
+  walsh (2^n) x = rademacherFunction n x := by
   sorry
 
 theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
-  walsh N x = walsh M x * ∏ m in binaryReoresentationSet (N - (2^M)) , rademacherFunction m x :=
+  walsh N x = walsh (2^M) x * ∏ m in binaryRepresentationSet (N - (2^M)) , rademacherFunction m x := by
+  simp [walshRademacherRelation]
+  have h1: binaryRepresentationSet (2 ^ M) ∪ binaryRepresentationSet (N - 2 ^ M)= binaryRepresentationSet N := by
+    rw[← factaboutbinaryRepresentationSet]
+    unfold binaryRepresentationSet
+    sorry
+
+  --unfold binaryRepresentationSet
   sorry
-
-
 -- Lemma 3.2: Writting the first sum using SetDyadicIntervals
 theorem lemma1_1 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
   WalshFourierPartialSum f (2^M) x =
