@@ -37,13 +37,109 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
   unfold dyadicInterval
-  by_cases hk : k = k'
+  by_cases hk : k = k' --they have the same length
   rw[hk]
-  by_cases hn : n = n'
+  by_cases hn : n = n' -- they have the same length and the same beginning
   rw[hn]
   simp
-  sorry
-  sorry
+  -- they have the same length and different beginning → they are disjoint
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  by_cases hn1 : n< n'
+  have h : n + 1 ≤ n' := by
+    rw[Int.add_one_le_iff]
+    apply hn1
+  have h12 : (2 ^ k' : ℝ) * (↑n + 1) ≤ (2 ^ k' : ℝ) * ↑n' := by
+    apply mul_le_mul_of_nonneg_left
+    exact_mod_cast h
+    linarith
+  linarith
+--here the case  n' smaller than n beginns
+  have h : n' + 1 ≤ n := by
+    rw[Int.add_one_le_iff, ← Int.not_le, le_iff_eq_or_lt,not_or]
+    exact Decidable.not_imp_iff_and_not.mp fun a ↦ hn1 (a hn)
+  have h12 : (2 ^ k' : ℝ) * (↑n' + 1) ≤ (2 ^ k' : ℝ) * ↑n := by
+    apply mul_le_mul_of_nonneg_left
+    exact_mod_cast h
+    linarith
+  --done for k=k'
+  linarith
+  by_cases hk1 : k<k'
+  by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
+  by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
+  right
+  left
+  intros x h1
+  rcases h1 with ⟨h_left, h_right⟩
+  refine mem_setOf.mpr ?_
+  have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
+    apply le_trans hn1
+    rw [mul_comm]
+    exact h_left
+  have h_2 : x < 2 ^ k' * (↑n' + 1) := by
+    apply lt_of_lt_of_le h_right
+    rw [mul_comm]
+    exact hn2
+  apply And.intro
+  exact h_1
+  exact h_2
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k' * (↑n'+1) : ℝ ) ≤ ↑n * 2 ^ k := by
+    by_contra h
+    rw[not_le] at hn2
+    rw[not_le] at h
+    rw[← Int.add_one_le_iff] at hk1
+    sorry
+  linarith
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
+    sorry
+  linarith
+  by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
+  by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
+  right
+  left
+  intros x h1
+  rcases h1 with ⟨h_left, h_right⟩
+  refine mem_setOf.mpr ?_
+  have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
+    apply le_trans hn1
+    rw [mul_comm]
+    exact h_left
+  have h_2 : x < 2 ^ k' * (↑n' + 1) := by
+    apply lt_of_lt_of_le h_right
+    rw [mul_comm]
+    exact hn2
+  apply And.intro
+  exact h_1
+  exact h_2
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k' * (↑n'+1) : ℝ ) ≤ ↑n * 2 ^ k := by
+    sorry
+  linarith
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
+    sorry
+  linarith
 
 
 
