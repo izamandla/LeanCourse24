@@ -1,37 +1,46 @@
-/- It is fine to import all of Mathlib in your project.
-This might make the loading time of a file a bit longer. If you want a good chunk of Mathlib, but not everything, you can `import Mathlib.Tactic` and then add more imports as necessary. -/
 import Mathlib
-
-
-/- open namespaces that you use to shorten names and enable notation. -/
-open Function Set Classical
-
-/- recommended whenever you define anything new. -/
-noncomputable section
-
-/- Now write definitions and theorems. -/
-
-/- The main goal of master thesis is to prove Walsh analogue of the Carleson-Hunt theorem using Linearised Metric Carleson
-theorem.
-Here the first step would be proven
+/-!
+## Project Overview
+This project aims to make first steps to prove the Walsh analogue of the Carleson-Hunt theorem
+using the Linearized Metric Carleson theorem. Those steps include:
+1. Defining dyadic intervals, rectangles, and related structures, and showing some coloraries about them.
+2. Defining Haar, Walsh and Rademacher functions, as well as the Walsh-Fourier series and looking at the relations between them.
+3. Showing the basic result about the Walsh-Fourier.
 -/
 
+open Function Set Classical
+noncomputable section
 
--- zastanów się kiedy jest lepiej robić struktury a kiedy definicje
+/- ## Dyadic Structures -/
+namespace DyadicStructures
 
-
--- Definition 1.1: Dyadic Interval and dyadic rectangle
+/-- Definition 1.1: Dyadic Interval and dyadic rectangle
+  A dyadic interval is defined as `[2^k * n, 2^k * (n + 1))`. --/
 def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
+
+--Check that 0.4 belongs to the dyadic interval `2^(-5) * 12, 2^(-5)*(12+1)`, i.e. `[0.37500, 0.40625)`.
+example : (0.4 : ℝ) ∈ dyadicInterval (-5) 12 := by
+  simp [dyadicInterval]
+  norm_num
+
+--Check that 0.75 does not belong to the dyadic interval `[0, 0.5) = dyadicInterval -1 0`.
+example : (0.75 : ℝ) ∉ dyadicInterval (-1) 0 := by
+  simp [dyadicInterval]
+  norm_num
+
+
+/-- A dyadic rectangle is the Cartesian product of two dyadic intervals. --/
 def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
   (dyadicInterval k n).prod (dyadicInterval k' n')
 
+/-- Collection of dyadic intervals at a fixed scale.
+  I DONT USE IT - MAYBE I SHOULD GET RID OF IT? --/
 def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
---tak se bo zdefiniowałam SetDyadicIntervals i go nie używam
 
---theorem that 2 dyadic intervals are disjoint or one is contained in another
+/-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
 theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
@@ -144,20 +153,27 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
 
 
 
--- Definition 1.2: Tile
+/- Definition 1.2: Tile-/
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=
   ∃ k n : ℤ, I = dyadicInterval k n ∧ ω = {x | x = 2^(-k)}
 
 -- Definition 1.3: Dyadic Test Function
-/-def dyadicTestFunction (N : ℕ) (coeffs : Fin N → ℝ) (intervals : Fin N → Set ℝ) : ℝ → ℝ :=
-  λ x => ∑ k , ∑ n ,coeffs k * (dyadicInterval k n).indicator 1 x
-problem z sumowaniem po k i n (coś z finite set) -/
+-- (Left for a future fix if needed.)
+/-
+def dyadicTestFunction (N : ℕ) (coeffs : Fin N → ℝ) (intervals : Fin N → Set ℝ) : ℝ → ℝ :=
+  λ x => ∑ k , ∑ n , coeffs k * (dyadicInterval k n).indicator 1 x
+-/
 
-#check dyadicInterval
-#check dyadicRectangle
-#check Tile
+end DyadicStructures
 
--- Definition 1.4: Walsh Function
+
+
+/- ## Walsh Functions and Walsh-Fourier Series -/
+namespace Walsh
+
+/--
+Definition 1.4: Walsh Function `W_n(x)`.
+-/
 def walsh (n : ℕ) : ℝ → ℝ
 | x =>
   if n = 0 then 1 -- Base case: W₀(x) = 1
@@ -173,76 +189,140 @@ def walsh (n : ℕ) : ℝ → ℝ
     else 0
 
 
+--Trivial example: for `n=0`, `Walsh.walsh 0 x = 1` for any `x`
+example : Walsh.walsh 0 (0.123) = 1 := by
+  simp [walsh]
+
+
 -- Definition 1.5
--- Walsh inner product
+/--
+Walsh inner product definition.
+-/
 def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
   ∫ x in Set.Icc 0 1, f x * walsh n x
 
--- Walsh Fourier partial sum
+/--
+Walsh Fourier partial sum.
+-/
 def WalshFourierPartialSum (f : ℝ → ℝ) (N : ℕ) : ℝ → ℝ :=
  λ x => ∑ n in Finset.range N, (walshInnerProduct f n) * walsh n x
 
--- Walsh Fourier Series
+/--
+Walsh Fourier Series.
+-/
 def walshFourierSeries (f : ℝ → ℝ) : ℝ → ℝ :=
   λ x => tsum (λ N => WalshFourierPartialSum f N x)
 --ten tsum jest tutaj chyba bez sensu
 
---Those functions should be in L2 not just ℝ → ℝ
+/--
+Binary representation of a number as a set of indices.
+-/
+def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
+  Finset.filter (λ m => Nat.testBit n m) (Finset.range (n + 1))
 
--- Definition 1.6
--- Haar function h(x)
+/--
+Properties of Binary representation set
+-/
+theorem factaboutbinaryRepresentationSet (N M : ℕ) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
+    sorry
+
+
+--Those functions should be in L2 not just ℝ → ℝ
+end Walsh
+
+
+
+/- ## Haar and Rademacher functions -/
+namespace Haar
+
+/--
+Definition 1.6: Haar function `h(x)`.
+-/
 def haarFunction (x : ℝ) : ℝ :=
   if 0 ≤ x ∧ x < 1/2 then 1
   else if 1/2 ≤  x ∧ x < 1 then -1
   else 0
 
--- Scaled Haar function h_I(x) for dyadic interval I = [2^k n, 2^k (n+1))
+/--
+Scaled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
+-/
 def haarFunctionScaled (k n : ℕ) (x : ℝ) : ℝ :=
   2^(k / 2 : ℝ) * haarFunction (2^k * x - n)
 
--- Definition 1.7 of the Rademacher function
+/--
+Definition 1.7 the Rademacher function `r_n(x)`.
+-/
 def rademacherFunction (n : ℕ) (t : ℝ) : ℝ :=
   2^(- n / 2 : ℝ ) * ∑ k in Finset.range n, haarFunctionScaled n k t
 --- changed so it comes from relation to haar functions
 
--- binary representation
-def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
-  Finset.filter (λ m => Nat.testBit n m) (Finset.range (n + 1))
+end Haar
 
-theorem factaboutbinaryRepresentationSet (N M : ℕ) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
-    sorry
+/- ## Kernel-/
+namespace Kernel
+def kernel (N : ℕ) (x y : ℝ) : ℝ :=
+    1 + ∑ m in Walsh.binaryRepresentationSet N, ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y)
+
+end Kernel
 
 
--- Theorem 2: Walsh function in terms of Rademacher functions
+/--
+Relations between Rademacher and Walsh functions.
+-/
 
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
-  walsh n x = ∏ m in binaryRepresentationSet n , rademacherFunction m x := by
+  Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
   sorry
 
 theorem differentwalshRademacherRelation (n : ℕ) (x : ℝ) :
-  walsh (2^n) x = rademacherFunction n x := by
+  Walsh.walsh (2^n) x = Haar.rademacherFunction n x := by
   sorry
 
 theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
-  walsh N x = walsh (2^M) x * ∏ m in binaryRepresentationSet (N - (2^M)) , rademacherFunction m x := by
+  Walsh.walsh N x = Walsh.walsh (2^M) x * ∏ m in Walsh.binaryRepresentationSet (N - (2^M)) , Haar.rademacherFunction m x := by
   simp [walshRademacherRelation]
-  have h1: binaryRepresentationSet (2 ^ M) ∪ binaryRepresentationSet (N - 2 ^ M)= binaryRepresentationSet N := by
-    rw[← factaboutbinaryRepresentationSet]
-    unfold binaryRepresentationSet
+  have h1: Walsh.binaryRepresentationSet (2 ^ M) ∪ Walsh.binaryRepresentationSet (N - 2 ^ M)= Walsh.binaryRepresentationSet N := by
+    rw[← Walsh.factaboutbinaryRepresentationSet]
+    unfold Walsh.binaryRepresentationSet
     sorry
 
   --unfold binaryRepresentationSet
   sorry
--- Lemma 3.2: Writting the first sum using SetDyadicIntervals
+
+/- ## Additional lemmas needed for the main result -/
+
+/--
+Lemma 3.1 (part 1).
+-/
 theorem lemma1_1 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
-  WalshFourierPartialSum f (2^M) x =
-  ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * walsh (2^M) y * (haarFunctionScaled M k y)  * walsh (2^M) x  * (haarFunctionScaled M k x) ):=
+  Walsh.WalshFourierPartialSum f (2^M) x =
+  ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * Walsh.walsh (2^M) y * (Haar.haarFunctionScaled M k y)  * Walsh.walsh (2^M) x  * (Haar.haarFunctionScaled M k x) ):=
   sorry
 
+/--
+Lemma 3.1 (part 2).
+-/
 theorem lemma1_2 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
-  WalshFourierPartialSum f (2^M) x =
-  ∑ k in Finset.range (2^M),(∫ y in Set.Icc 0 1, f y * walsh N y * (haarFunctionScaled M k y) ) * walsh N x * (haarFunctionScaled M k x) := by
+  Walsh.WalshFourierPartialSum f (2^M) x =
+  ∑ k in Finset.range (2^M),(∫ y in Set.Icc 0 1, f y * Walsh.walsh N y * (Haar.haarFunctionScaled M k y) ) * Walsh.walsh N x * (Haar.haarFunctionScaled M k x) := by
   rw [lemma1_1]
   sorry
   sorry
+  sorry
+-- te lematy na górze można przepisać tak żeby były spójne z tym późniejszym
+
+/--
+Lemma 3.2
+-/
+theorem lemma2 (M N N' : ℕ) (h1 : 2^M ≤ N ∧ N < 2^(M+1)) (h2 : N' = N - 2^M)
+  (f : ℝ → ℝ) (x : ℝ) :
+  ∑ i in Finset.range (N + 1) \ Finset.range (2^M), Walsh.walshInnerProduct f i  * Walsh.walsh i x =
+  ∑ i in Finset.range (N' + 1), Walsh.walshInnerProduct (Haar.rademacherFunction M * f ) i * (Haar.rademacherFunction M x) *(Walsh.walsh i x) := by
+  sorry
+
+
+/- ## Main result -/
+
+theorem mainresult (N : ℕ) (f : ℝ → ℝ) (x : ℝ) :
+  Walsh.WalshFourierPartialSum f N x = (∫ y in Set.Icc 0 1, f y * Walsh.walsh N y * Walsh.walsh N x * Kernel.kernel N x y) := by
   sorry
