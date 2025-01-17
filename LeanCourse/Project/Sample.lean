@@ -5,7 +5,7 @@ This project aims to make first steps to prove the Walsh analogue of the Carleso
 using the Linearized Metric Carleson theorem. Those steps include:
 1. Defining dyadic intervals, rectangles, and related structures, and showing some coloraries about them.
 2. Defining Haar, Walsh and Rademacher functions, as well as the Walsh-Fourier series and looking at the relations between them.
-3. Showing the basic result about the Walsh-Fourier.
+3. Showing the first bigger theorem needed for the main proof.
 -/
 
 open Function Set Classical
@@ -46,9 +46,11 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
   unfold dyadicInterval
-  by_cases hk : k = k' --they have the same length
+  --they have the same length, so they may be the same interval or they are disjoint
+  by_cases hk : k = k'
   rw[hk]
-  by_cases hn : n = n' -- they have the same length and the same beginning
+  -- they have the same length and the same beginning → they are the same
+  by_cases hn : n = n'
   rw[hn]
   simp
   -- they have the same length and different beginning → they are disjoint
@@ -66,7 +68,7 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
     exact_mod_cast h
     linarith
   linarith
---here the case  n' smaller than n beginns
+  --here the case  n' smaller than n beginns
   have h : n' + 1 ≤ n := by
     rw[Int.add_one_le_iff, ← Int.not_le, le_iff_eq_or_lt,not_or]
     exact Decidable.not_imp_iff_and_not.mp fun a ↦ hn1 (a hn)
@@ -74,7 +76,7 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
     apply mul_le_mul_of_nonneg_left
     exact_mod_cast h
     linarith
-  --done for k=k'
+  --they have different length, so the smaller one can be contained in another or they are disjoint
   linarith
   by_cases hk1 : k<k'
   by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
@@ -100,13 +102,20 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 : (2^k' : ℝ ) <2^k := by
+    sorry
+  sorry
+  /-simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
   have h_10 :  (2 ^ k' * (↑n'+1) : ℝ ) ≤ ↑n * 2 ^ k := by
     by_contra h
     rw[not_le] at hn2
-    rw[not_le] at h
+    --rw[not_le] at h
     rw[← Int.add_one_le_iff] at hk1
+    have A : (2 : ℝ) ^ k * (n : ℝ) ≤ (2 : ℝ) ^ k' * (n' + 1) := le_trans h1 (le_of_lt h4)--no to jest sprzeczne z h
+    have B : (2 : ℝ) ^ k' * (n' : ℝ) ≤ (2 : ℝ) ^ k * (n + 1) := le_trans h3 (le_of_lt h2)
     sorry
-  linarith
+  linarith-/
   left
   ext x
   rw [← Set.setOf_and]
