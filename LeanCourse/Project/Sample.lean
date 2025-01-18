@@ -45,39 +45,44 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
+  -- Unfold the definition to make the intervals visible.
   unfold dyadicInterval
-  --they have the same length, so they may be the same interval or they are disjoint
+  /- Case 1: k = k'. -/
+   --they have the same length, so they may be the same interval or they are disjoint
   by_cases hk : k = k'
   rw[hk]
-  -- they have the same length and the same beginning → they are the same
+  -- Subcase 1a: n = n'. Then the intervals coincide, so we can pick the second OR third
+  -- disjunction (since they are literally the same set).
   by_cases hn : n = n'
   rw[hn]
   simp
-  -- they have the same length and different beginning → they are disjoint
+  -- Subcase 1b: n ≠ n'. Then the intervals have the same length but different “start.”
+  -- For dyadic intervals of the same length, this forces them to be disjoint.
   left
   ext x
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
-  by_cases hn1 : n< n'
-  have h : n + 1 ≤ n' := by
-    rw[Int.add_one_le_iff]
-    apply hn1
-  have h12 : (2 ^ k' : ℝ) * (↑n + 1) ≤ (2 ^ k' : ℝ) * ↑n' := by
+  by_cases hnlt : n < n'
+  have hn1 : n + 1 ≤ n' := Int.add_one_le_of_lt hnlt
+  have h : (2 ^ k' : ℝ) * (↑n + 1) ≤ (2 ^ k' : ℝ) * ↑n' := by
     apply mul_le_mul_of_nonneg_left
-    exact_mod_cast h
+    exact_mod_cast hn1
     linarith
   linarith
   --here the case  n' smaller than n beginns
-  have h : n' + 1 ≤ n := by
+  --rw [not_lt] at hnlt
+  --have h1: n' < n := lt_of_le_of_ne hnlt (Ne.symm hn)
+  have h : n' + 1 ≤ n :=  by
     rw[Int.add_one_le_iff, ← Int.not_le, le_iff_eq_or_lt,not_or]
-    exact Decidable.not_imp_iff_and_not.mp fun a ↦ hn1 (a hn)
+    exact Decidable.not_imp_iff_and_not.mp fun a ↦ hnlt (a hn)
   have h12 : (2 ^ k' : ℝ) * (↑n' + 1) ≤ (2 ^ k' : ℝ) * ↑n := by
     apply mul_le_mul_of_nonneg_left
     exact_mod_cast h
     linarith
   --they have different length, so the smaller one can be contained in another or they are disjoint
   linarith
+  /- Case 2: k ≠ k'. WLOG assume k < k' (the other case is symmetric). -/
   by_cases hk1 : k<k'
   by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
   by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
@@ -102,8 +107,13 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
-  have h_10 : (2^k' : ℝ ) <2^k := by
+  rw [not_le] at hn2
+  have h_10 : ↑n * (2 ^ k : ℝ) < 2 ^ k' * (↑n' + 1) := by
+    linarith
+  by_cases hx : k ≥ 0
+  have h_x1 : n +1 > (2^(k'-k) : ℝ)*(n' + 1) := by
     sorry
+  sorry
   sorry
   /-simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis

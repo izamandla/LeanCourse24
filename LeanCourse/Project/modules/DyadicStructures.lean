@@ -92,6 +92,7 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   ext x
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+ -- rw[← lt_of_not_le] at hn2
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
   have h_10 : (2^k' : ℝ ) <2^k := by
     sorry
