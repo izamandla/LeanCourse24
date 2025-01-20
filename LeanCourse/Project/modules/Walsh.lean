@@ -57,8 +57,30 @@ def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
 /--
 Properties of Binary representation set
 -/
-theorem factaboutbinaryRepresentationSet (N M : ℕ) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
-    sorry
+
+theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
+  simp [binaryRepresentationSet, Nat.testBit_zero]
+
+theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
+  m ∈ binaryRepresentationSet n ↔ (m < n + 1 ∧ Nat.testBit n m = true) := by
+  simp [binaryRepresentationSet, Finset.mem_filter, Finset.mem_range]
+
+/-theorem testBit_sub_ofTestBit (n m i : ℕ) (hm : Nat.testBit n m = true) :
+  Nat.testBit (n - 2^m) i = if i = m then false else Nat.testBit n i := by
+  -- Outline of a proof:
+  -- 1) From Nat.testBit n m = true, we know n >= 2^m, so subtracting 2^m
+  --    does not borrow from higher bits.
+  -- 2) The m-th bit is cleared. So testBit (n - 2^m) m = false.
+  -- 3) Other bits i ≠ m are unchanged.
+  --
+  -- If Lean doesn't have a built-in "testBit_sub" lemma, one can prove
+  -- it by reasoning on the binary representation or bitwise ops.
+  sorry-/
+
+theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
+  sorry
+
+
 
 
 --Those functions should be in L2 not just ℝ → ℝ
