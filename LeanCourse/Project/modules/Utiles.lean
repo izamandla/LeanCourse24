@@ -1,4 +1,3 @@
-import Mathlib
 import LeanCourse.Project.modules.DyadicStructures
 import LeanCourse.Project.modules.Haar
 import LeanCourse.Project.modules.Walsh
@@ -29,7 +28,7 @@ theorem kernel_zero (x y : ℝ) : kernel 0 x y = 1 := by
 /--
 Kernel function for binary powers `N = 2^m`.
 -/
-theorem kernel_binary (N : ℕ) (x y : ℝ) (h : ∃ (m : ℕ), N = 2^m) : kernel N x y = 1 + ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y) := by
+theorem kernel_two_pow (m : ℕ) (x y : ℝ) : kernel (2^m) x y = 1 + ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y) := by
     sorry
 --co zrobić z tym m - czy muszę je wpisywać w argumentach?
 
@@ -41,6 +40,11 @@ Relation between Haar function and Walsh functions.
 -/
 
 theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
+  unfold Walsh.walsh
+  simp
+  split_ifs with h
+  sorry
+  sorry
   sorry
 
 
@@ -59,21 +63,21 @@ theorem differentwalshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh (2^n) x = Haar.rademacherFunction n x := by
   sorry
 
-theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
+theorem walshRademacherRelationresult {M N : ℕ} (h : 2^M ≤ N) (x : ℝ) :
   Walsh.walsh N x = Walsh.walsh (2^M) x * ∏ m in Walsh.binaryRepresentationSet (N - (2^M)) , Haar.rademacherFunction m x := by
   simp [walshRademacherRelation]
   have h1: Walsh.binaryRepresentationSet (2 ^ M) ∪ Walsh.binaryRepresentationSet (N - 2 ^ M)= Walsh.binaryRepresentationSet N := by
     rw[← Walsh.remove_bit]
     unfold Walsh.binaryRepresentationSet
     sorry
-
+    sorry
   --unfold binaryRepresentationSet
   sorry
 
-/- tu się coś glebi
-theorem fun_change_partial_sum (M N : ℕ) (f : ℝ → ℝ) : Haar.rademacherFunction M  *(Walsh.walshFourierPartialSum (Haar.rademacherFunction M * f)  N )= ∑ n in Finset.range N, (∫ y in Set.Icc 0 1, (Haar.rademacherFunction M y )* f y * Walsh.walsh n y) * Haar.rademacherFunction M * Walsh.walsh n  := by
+
+theorem fun_change_partial_sum (M N : ℕ) (f : ℝ → ℝ) (x : ℝ ) : Haar.rademacherFunction M x *(Walsh.walshFourierPartialSum (Haar.rademacherFunction M * f)  N ) x = ∑ n in Finset.range N, (∫ y in Set.Icc 0 1, (Haar.rademacherFunction M y )* f y * Walsh.walsh n y) * Haar.rademacherFunction M x * Walsh.walsh n x  := by
   sorry
--/
+
 /- ## Additional lemmas needed for the main result -/
 
 /--

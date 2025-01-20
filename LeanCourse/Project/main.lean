@@ -1,6 +1,3 @@
---import LeanCourse.Project.modules.DyadicStructures
---import LeanCourse.Project.modules.Haar
---import LeanCourse.Project.modules.Walsh
 import LeanCourse.Project.modules.Utiles
 
 /-!

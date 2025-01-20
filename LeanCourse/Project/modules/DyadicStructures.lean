@@ -152,7 +152,16 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   linarith
 
 
-
+--doing first for k smaller than k' and using it in lemma
+theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k') :
+  (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
+  (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
+  (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
+  -- Unfold the definition to make the intervals visible.
+  unfold dyadicInterval
+  by_cases h1 : n ≤ n'
+  sorry
+  sorry
 
 /- Definition 1.2: Tile-/
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=

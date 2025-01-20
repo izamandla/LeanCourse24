@@ -8,9 +8,9 @@ namespace Walsh
 /--
 Definition 1.4: Walsh Function `W_n(x)`.
 -/
-def walsh (n : ℕ) : ℝ → ℝ
+/-def walsh (n : ℕ) : ℝ → ℝ
 | x =>
-  if n = 0 then 1 -- Base case: W₀(x) = 1
+  if n = 0 then 1 -- Base case: W₀(x) = 1 (to jest na wszystkim nie tylko na [0,1] Zmień!!! - można ułatwić po przez jeden warunek z x<1/2)
   else if n % 2 = 0 then -- Case for even n (n = 2m)
     let m := n / 2
     if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
@@ -21,11 +21,90 @@ def walsh (n : ℕ) : ℝ → ℝ
     if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
     else if 0.5 ≤ x ∧ x < 1 then -walsh m (2 * x - 1)
     else 0
+    #check walsh.induct-/
+
+def walsh (n : ℕ) : ℝ → ℝ
+| x =>
+  if x <0 ∨  1 ≤  x then 0
+  else if x < 0.5 then
+    let m := n / 2
+    if n = 0 then 1
+    else walsh m (2 * x)
+  else
+    if n = 0 then 1
+    else
+      let m := n / 2
+      if  n % 2 = 0 then walsh m (2 * x - 1)
+      else walsh m (2 * x - 1)
+    #check walsh.induct
+
+@[simp]
+theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
+  simp [walsh, h]
+
+-- na razie poniższe twierdzenia dopasowane do poprzedniej
+theorem walsh_even {n : ℕ}{x : ℝ} : walsh (2*n) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then walsh n (2 * x - 1) else 0) := by
+  sorry
+
+theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then -walsh n (2 * x - 1) else 0) := by
+  sorry
+
+--to na razie jest dla walsha zdefiniowanego na przedziale
+theorem walsh_even_oddd {n : ℕ}{x : ℝ} : if  0.5 ≤ x ∧ x < 1 then walsh (2*n) x = - walsh (2*n +1) x else walsh (2*n) x = walsh (2*n +1) x:= by
+  unfold walsh
+  simp
+  split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9
+  simp
+  exfalso
+  exact
+  sorry
+  all_goals sorry
 
 
---Trivial example: for `n=0`, `Walsh.walsh 0 x = 1` for any `x`
-example : Walsh.walsh 0 (0.123) = 1 := by
-  simp [walsh]
+/--
+Walsh functions are nonzero on their domain
+-/
+theorem walsh_nonneg (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) : walsh n x ≠ 0 := by
+  simp
+  unfold walsh
+  simp
+  constructor
+  apply h.1
+  constructor
+  apply h.2
+  by_contra
+  sorry
+
+/--
+Walsh function is zero outside the interval `[0, 1)`
+-/
+@[simp]
+theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : walsh n x = 0 := by
+  simp [walsh, h]
+
+
+theorem walsh_recursion_even (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) :
+  walsh (2 * n) x = (if x < 0.5 then walsh n (2 * x) else walsh n (2 * x - 1)) := by
+  unfold walsh
+  simp
+  sorry
+
+theorem walsh_recursion_odd (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) :
+  walsh (2 * n + 1) x = (if x < 0.5 then walsh n (2 * x) else -walsh n (2 * x - 1)) := by
+  unfold walsh
+  simp
+  sorry
+
+
+theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
+  sorry
+
+theorem sqr_walsh {n : ℕ} (x : ℝ) (h : 0 ≤ x ∧ x < 1) : (walsh n x)*(walsh n x) = 1 := by
+  rw[mul_walsh]
+  simp
+  sorry
+
+
 
 
 -- Definition 1.5
@@ -34,6 +113,32 @@ Walsh inner product definition.
 -/
 def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
   ∫ x in Set.Icc 0 1, f x * walsh n x
+
+
+theorem walsh_orthogonality (n m : ℕ) (h : n ≠ m) :
+  walshInnerProduct (walsh n) m = 0 := by
+  sorry
+
+theorem walsh_norm (n : ℕ) :
+  walshInnerProduct (walsh n) n = 1 := by
+  unfold walshInnerProduct
+  sorry
+
+theorem walshInnerProduct_smul (c : ℝ) (f : ℝ → ℝ) (n : ℕ) :
+  walshInnerProduct (λ x => c * f x) n = c * walshInnerProduct f n := by
+  unfold walshInnerProduct
+  simp
+  sorry
+
+theorem mul_walshInnerProduct (f g : ℝ → ℝ) (n : ℕ) (x : ℝ ) :
+  walshInnerProduct (λ y ↦ g x * f y) n = ∫ y in Set.Icc 0 1, g x * f y * walsh n y := by
+  unfold walshInnerProduct
+  simp
+
+theorem walshInnerProduct_add (f g : ℝ → ℝ) (n : ℕ) :
+  walshInnerProduct (λ x => f x + g x) n = walshInnerProduct f n + walshInnerProduct g n := by
+  -- Prove additivity of the inner product.
+  sorry
 
 /--
 Walsh Fourier partial sum.
@@ -46,7 +151,6 @@ Walsh Fourier Series.
 -/
 def walshFourierSeries (f : ℝ → ℝ) : ℝ → ℝ :=
   λ x => tsum (λ N => walshFourierPartialSum f N x)
---ten tsum jest tutaj chyba bez sensu
 
 /--
 Binary representation of a number as a set of indices.
@@ -55,11 +159,11 @@ def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
   Finset.filter (λ m => Nat.testBit n m) (Finset.range (Nat.size n + 1))
 
 
-/--
+/-!
 Properties of Binary representation set
 -/
 
-/- Binary representation set of `0` is empty. -/
+/-- Binary representation set of `0` is empty. -/
 
 theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
   simp [binaryRepresentationSet, Nat.testBit_zero]
@@ -75,6 +179,13 @@ theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   apply m.testBit_implies_ge at h
   rw [ge_iff_le, ← m.lt_size] at h
   linarith
+
+theorem binaryRepresentationSet_subset (n : ℕ) :
+  binaryRepresentationSet n ⊆ Finset.range (Nat.size n + 1) := by
+  -- Binary representation is a subset of the valid range.
+  sorry
+
+
 
 /--
 Removing an element from the binary representation set.

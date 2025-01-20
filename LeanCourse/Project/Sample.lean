@@ -169,6 +169,125 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
     sorry
   linarith
 
+--doing first for k smaller than k' and using it in lemma
+theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k') :
+  (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
+  (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
+  (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
+  -- Unfold the definition to make the intervals visible.
+  unfold dyadicInterval
+  by_cases h1 : n ≤ n'
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  by_cases hnlt : n < n'
+  have hn1 : n + 1 ≤ n' := Int.add_one_le_of_lt hnlt
+  have h : (2 ^ k' : ℝ) * (↑n + 1) ≤ (2 ^ k' : ℝ) * ↑n' := by
+    apply mul_le_mul_of_nonneg_left
+    exact_mod_cast hn1
+    linarith
+  linarith
+  --here the case  n' smaller than n beginns
+  --rw [not_lt] at hnlt
+  --have h1: n' < n := lt_of_le_of_ne hnlt (Ne.symm hn)
+  have h : n' + 1 ≤ n :=  by
+    rw[Int.add_one_le_iff, ← Int.not_le, le_iff_eq_or_lt,not_or]
+    exact Decidable.not_imp_iff_and_not.mp fun a ↦ hnlt (a hn)
+  have h12 : (2 ^ k' : ℝ) * (↑n' + 1) ≤ (2 ^ k' : ℝ) * ↑n := by
+    apply mul_le_mul_of_nonneg_left
+    exact_mod_cast h
+    linarith
+  --they have different length, so the smaller one can be contained in another or they are disjoint
+  linarith
+  /- Case 2: k ≠ k'. WLOG assume k < k' (the other case is symmetric). -/
+  by_cases hk1 : k<k'
+  by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
+  by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
+  right
+  left
+  intros x h1
+  rcases h1 with ⟨h_left, h_right⟩
+  refine mem_setOf.mpr ?_
+  have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
+    apply le_trans hn1
+    rw [mul_comm]
+    exact h_left
+  have h_2 : x < 2 ^ k' * (↑n' + 1) := by
+    apply lt_of_lt_of_le h_right
+    rw [mul_comm]
+    exact hn2
+  apply And.intro
+  exact h_1
+  exact h_2
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  rw [not_le] at hn2
+  have h_10 : ↑n * (2 ^ k : ℝ) < 2 ^ k' * (↑n' + 1) := by
+    linarith
+  by_cases hx : k ≥ 0
+  have h_x1 : n +1 > (2^(k'-k) : ℝ)*(n' + 1) := by
+    sorry
+  sorry
+  sorry
+  /-simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k' * (↑n'+1) : ℝ ) ≤ ↑n * 2 ^ k := by
+    by_contra h
+    rw[not_le] at hn2
+    --rw[not_le] at h
+    rw[← Int.add_one_le_iff] at hk1
+    have A : (2 : ℝ) ^ k * (n : ℝ) ≤ (2 : ℝ) ^ k' * (n' + 1) := le_trans h1 (le_of_lt h4)--no to jest sprzeczne z h
+    have B : (2 : ℝ) ^ k' * (n' : ℝ) ≤ (2 : ℝ) ^ k * (n + 1) := le_trans h3 (le_of_lt h2)
+    sorry
+  linarith-/
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
+    sorry
+  linarith
+  by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
+  by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
+  right
+  left
+  intros x h1
+  rcases h1 with ⟨h_left, h_right⟩
+  refine mem_setOf.mpr ?_
+  have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
+    apply le_trans hn1
+    rw [mul_comm]
+    exact h_left
+  have h_2 : x < 2 ^ k' * (↑n' + 1) := by
+    apply lt_of_lt_of_le h_right
+    rw [mul_comm]
+    exact hn2
+  apply And.intro
+  exact h_1
+  exact h_2
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k' * (↑n'+1) : ℝ ) ≤ ↑n * 2 ^ k := by
+    sorry
+  linarith
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ -- deviding inequalities for different hypothesis
+  have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
+    sorry
+  linarith
+
 
 
 
