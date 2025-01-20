@@ -31,7 +31,7 @@ theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
   Walsh.walsh N x = Walsh.walsh (2^M) x * ∏ m in Walsh.binaryRepresentationSet (N - (2^M)) , Haar.rademacherFunction m x := by
   simp [walshRademacherRelation]
   have h1: Walsh.binaryRepresentationSet (2 ^ M) ∪ Walsh.binaryRepresentationSet (N - 2 ^ M)= Walsh.binaryRepresentationSet N := by
-    rw[← Walsh.factaboutbinaryRepresentationSet]
+    rw[← Walsh.remove_bit]
     unfold Walsh.binaryRepresentationSet
     sorry
 
