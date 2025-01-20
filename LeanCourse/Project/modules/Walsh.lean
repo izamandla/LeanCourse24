@@ -52,32 +52,40 @@ def walshFourierSeries (f : ℝ → ℝ) : ℝ → ℝ :=
 Binary representation of a number as a set of indices.
 -/
 def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
-  Finset.filter (λ m => Nat.testBit n m) (Finset.range (n + 1))
+  Finset.filter (λ m => Nat.testBit n m) (Finset.range (Nat.size n + 1))
 
 /--
 Properties of Binary representation set
 -/
 
+/- Binary representation set of `0` is empty. -/
+
 theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
   simp [binaryRepresentationSet, Nat.testBit_zero]
 
-theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
-  m ∈ binaryRepresentationSet n ↔ (m < n + 1 ∧ Nat.testBit n m = true) := by
-  simp [binaryRepresentationSet, Finset.mem_filter, Finset.mem_range]
 
-/-theorem testBit_sub_ofTestBit (n m i : ℕ) (hm : Nat.testBit n m = true) :
-  Nat.testBit (n - 2^m) i = if i = m then false else Nat.testBit n i := by
-  -- Outline of a proof:
-  -- 1) From Nat.testBit n m = true, we know n >= 2^m, so subtracting 2^m
-  --    does not borrow from higher bits.
-  -- 2) The m-th bit is cleared. So testBit (n - 2^m) m = false.
-  -- 3) Other bits i ≠ m are unchanged.
-  --
-  -- If Lean doesn't have a built-in "testBit_sub" lemma, one can prove
-  -- it by reasoning on the binary representation or bitwise ops.
-  sorry-/
+
+theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
+  m ∈ binaryRepresentationSet n ↔ (Nat.testBit n m = true) := by
+  simp [binaryRepresentationSet, Finset.mem_filter, Finset.mem_range]
+  intro h
+  apply m.testBit_implies_ge at h
+  rw [ge_iff_le, ← m.lt_size] at h
+  linarith
+
 
 theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
+  rw [mem_binaryRepresentationSet_iff ] at h
+  ext x
+  simp
+  constructor
+  intro h1
+  rcases h1 with ⟨hr, hl⟩
+  rw [mem_binaryRepresentationSet_iff N x] at hr
+  refine (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
+  --apply Nat.testBit_implies_ge at hr
+  sorry
+  /- maybe useful in the future apply Nat.size_le -/
   sorry
 
 
