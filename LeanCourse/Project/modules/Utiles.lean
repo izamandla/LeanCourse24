@@ -12,12 +12,24 @@ namespace Kernel
 def kernel (N : ℕ) (x y : ℝ) : ℝ :=
     1 + ∑ m in Walsh.binaryRepresentationSet N, ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y)
 
+theorem kernel_zero (x y : ℝ) : kernel 0 x y = 1 := by
+  unfold kernel
+  --apply Walsh.binaryRepresentationSet_zero
+  sorry
+
+theorem kernel_binary (N : ℕ) (x y : ℝ) (h : ∃ (m : ℕ), N = 2^m) : kernel N x y = 1 + ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y) := by
+    sorry
+--co zrobić z tym m - czy muszę je wpisywać w argumentach?
+
 end Kernel
 
 
 /--
 Relations between Rademacher and Walsh functions.
 -/
+
+theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
+  sorry
 
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
