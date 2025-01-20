@@ -9,14 +9,26 @@ noncomputable section
 
 /- ## Kernel-/
 namespace Kernel
+
+/--
+Kernel function defined using Haar functions and binary representation sets.
+-/
 def kernel (N : ℕ) (x y : ℝ) : ℝ :=
     1 + ∑ m in Walsh.binaryRepresentationSet N, ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y)
 
+
+/--
+The kernel function at `N = 0` is constant 1.
+-/
 theorem kernel_zero (x y : ℝ) : kernel 0 x y = 1 := by
   unfold kernel
   --apply Walsh.binaryRepresentationSet_zero
   sorry
 
+
+/--
+Kernel function for binary powers `N = 2^m`.
+-/
 theorem kernel_binary (N : ℕ) (x y : ℝ) (h : ∃ (m : ℕ), N = 2^m) : kernel N x y = 1 + ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y) := by
     sorry
 --co zrobić z tym m - czy muszę je wpisywać w argumentach?
@@ -25,16 +37,24 @@ end Kernel
 
 
 /--
-Relations between Rademacher and Walsh functions.
+Relation between Haar function and Walsh functions.
 -/
 
 theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
   sorry
 
+
+/--
+Walsh functions expressed using products of Rademacher functions.
+-/
+--this is not necesserly true (bc of changed definition - check!)
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
   sorry
 
+/--
+Special case of Walsh-Rademacher relation for powers of two.
+-/
 theorem differentwalshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh (2^n) x = Haar.rademacherFunction n x := by
   sorry
@@ -50,13 +70,17 @@ theorem walshRademacherRelationresult (M N : ℕ) (h : 2^M ≤ N) (x : ℝ) :
   --unfold binaryRepresentationSet
   sorry
 
+/- tu się coś glebi
+theorem fun_change_partial_sum (M N : ℕ) (f : ℝ → ℝ) : Haar.rademacherFunction M  *(Walsh.walshFourierPartialSum (Haar.rademacherFunction M * f)  N )= ∑ n in Finset.range N, (∫ y in Set.Icc 0 1, (Haar.rademacherFunction M y )* f y * Walsh.walsh n y) * Haar.rademacherFunction M * Walsh.walsh n  := by
+  sorry
+-/
 /- ## Additional lemmas needed for the main result -/
 
 /--
 Lemma 3.1 (part 1).
 -/
 theorem lemma1_1 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
-  Walsh.WalshFourierPartialSum f (2^M) x =
+  Walsh.walshFourierPartialSum f (2^M) x =
   ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * Walsh.walsh (2^M) y * (Haar.haarFunctionScaled M k y)  * Walsh.walsh (2^M) x  * (Haar.haarFunctionScaled M k x) ):=
   sorry
 
@@ -64,7 +88,7 @@ theorem lemma1_1 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (
 Lemma 3.1 (part 2).
 -/
 theorem lemma1_2 (M N : ℕ) (h : 2^M ≤ N ∧ N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
-  Walsh.WalshFourierPartialSum f (2^M) x =
+  Walsh.walshFourierPartialSum f (2^M) x =
   ∑ k in Finset.range (2^M),(∫ y in Set.Icc 0 1, f y * Walsh.walsh N y * (Haar.haarFunctionScaled M k y) ) * Walsh.walsh N x * (Haar.haarFunctionScaled M k x) := by
   rw [lemma1_1]
   sorry

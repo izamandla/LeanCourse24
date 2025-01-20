@@ -24,8 +24,23 @@ Definition 1.7 the Rademacher function `r_n(x)`.
 -/
 def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
   2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled k n t
---- changed so it comes from relation to haar functions
 
+
+/--
+Product of scaled Haar functions on the same interval.
+-/
+
+theorem haarFunction_product (k n : ℕ) (x y : ℝ) : haarFunctionScaled k n x  * haarFunctionScaled k n y  =
+  if   ((n*2^k ≤ x ∧ x < (n+ 1)*2^k) ∧ (n*2^k ≤ y ∧ y < (n+ 1)*2^k)) then
+    if ((n*2^k ≤ x ∧ x < (n+ 1/2)*2^k) ∧ (n*2^k ≤ y ∧ y < (n+ 1/2)*2^k)) then 1
+    else if (((n+ 1/2)*2^k ≤ x ∧ x < (n+ 1)*2^k) ∧ ((n+ 1/2)*2^k ≤ y ∧ y < (n+ 1/2)*2^k)) then 1
+    else -1
+  else 0 := by
+  sorry
+
+/--
+Orthogonality of scaled Haar functions on intervals of the same length.
+-/
 
 theorem haarFunctionScaled_orthogonal {k n n' : ℕ} (h_diff : n ≠ n') : ∫ x in Set.Icc 0 1, haarFunctionScaled k n x * haarFunctionScaled k n' x = 0 := by
   simp_rw [haarFunctionScaled, mul_assoc, mul_comm]
@@ -44,7 +59,7 @@ theorem haarFunctionScaled_normalization (k n : ℕ) : ∫ x in Set.Icc 0 1, (ha
   sorry
 
 /--
-Orthogonality of Rademacher functions on [0,1].
+Orthogonality of Rademacher functions.
 -/
 theorem rademacherFunction_orthogonal (k m : ℕ) : ∫ x in Set.Icc 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
   -- Case analysis on k = m or k ≠ m.
@@ -61,5 +76,7 @@ theorem rademacherFunction_orthogonal (k m : ℕ) : ∫ x in Set.Icc 0 1, radema
     exact h-/
     sorry
   sorry
+
+
 
 end Haar

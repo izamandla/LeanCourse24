@@ -38,14 +38,14 @@ def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
 /--
 Walsh Fourier partial sum.
 -/
-def WalshFourierPartialSum (f : ℝ → ℝ) (N : ℕ) : ℝ → ℝ :=
+def walshFourierPartialSum (f : ℝ → ℝ) (N : ℕ) : ℝ → ℝ :=
  λ x => ∑ n in Finset.range N, (walshInnerProduct f n) * walsh n x
 
 /--
 Walsh Fourier Series.
 -/
 def walshFourierSeries (f : ℝ → ℝ) : ℝ → ℝ :=
-  λ x => tsum (λ N => WalshFourierPartialSum f N x)
+  λ x => tsum (λ N => walshFourierPartialSum f N x)
 --ten tsum jest tutaj chyba bez sensu
 
 /--
@@ -53,6 +53,7 @@ Binary representation of a number as a set of indices.
 -/
 def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
   Finset.filter (λ m => Nat.testBit n m) (Finset.range (Nat.size n + 1))
+
 
 /--
 Properties of Binary representation set
@@ -63,7 +64,9 @@ Properties of Binary representation set
 theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
   simp [binaryRepresentationSet, Nat.testBit_zero]
 
-
+/--
+Condition for being in the binary representation set.
+-/
 
 theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   m ∈ binaryRepresentationSet n ↔ (Nat.testBit n m = true) := by
@@ -73,6 +76,9 @@ theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   rw [ge_iff_le, ← m.lt_size] at h
   linarith
 
+/--
+Removing an element from the binary representation set.
+-/
 
 theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
   rw [mem_binaryRepresentationSet_iff ] at h
