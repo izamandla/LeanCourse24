@@ -159,7 +159,14 @@ theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k') :
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
   -- Unfold the definition to make the intervals visible.
   unfold dyadicInterval
-  by_cases h1 : n ≤ n'
+  by_cases h0 : n<n'
+  apply Nat.add_one_le_iff at h0
+  left
+  ext x
+  rw [← Set.setOf_and]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+
   sorry
   sorry
 
