@@ -152,23 +152,38 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   linarith
 
 
---doing first for k smaller than k' and using it in lemma
-theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k') :
+theorem mul_pow_inequality {n n' k k' : ℕ}
+  (h : n < n') (h' : k < k') :
+   2^k * n  < 2^k' * n'  := by
+  --rw [← n.add_one_le_iff] at h
+  have h0 : (2^k : ℝ) < 2^k' := by
+    refine (pow_lt_pow_iff_right ?h).mpr h'
+    linarith
+  apply Nat.mul_lt_mul_of_lt_of_le'
+  refine (Nat.pow_lt_pow_iff_right ?hac.h).mpr h'
+  linarith
+  exact Nat.le_of_succ_le h
+  -- no coś musi zostać zmienione bo to nie działa dobrze
+  sorry
+
+--case for k smaller and n smaller
+theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k'):
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
   -- Unfold the definition to make the intervals visible.
   unfold dyadicInterval
-  by_cases h0 : n<n'
-  apply Nat.add_one_le_iff at h0
+  by_cases h1 : n<n'
   left
   ext x
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+ -- apply mul_pow_inequality at h h1
 
   sorry
   sorry
+
 
 /- Definition 1.2: Tile-/
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=
