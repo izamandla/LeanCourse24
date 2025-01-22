@@ -152,22 +152,18 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   linarith
 
 
-theorem mul_pow_inequality {n n' k k' : ℕ}
-  (h : n < n') (h' : k < k') :
-   2^k * n  < 2^k' * n'  := by
-  --rw [← n.add_one_le_iff] at h
-  have h0 : (2^k : ℝ) < 2^k' := by
+
+theorem mul_pow_inequality { k k' n n' : ℕ }
+  (h : n < n') (h' : k < k') : (2^k : ℝ) * (n+1)  < 2^k' * n'  := by
+  rw [← n.add_one_le_iff] at h
+  have h0 : 2^k < 2^k' := by
     refine (pow_lt_pow_iff_right ?h).mpr h'
     linarith
-  apply Nat.mul_lt_mul_of_lt_of_le'
-  refine (Nat.pow_lt_pow_iff_right ?hac.h).mpr h'
-  linarith
-  exact Nat.le_of_succ_le h
-  -- no coś musi zostać zmienione bo to nie działa dobrze
+  --apply Nat.mul_lt_mul_of_lt_of_le h0 h
   sorry
 
---case for k smaller and n smaller
-theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k'):
+--case for k smaller and n smaller, both natural
+theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℕ ) (h : k < k'):
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
