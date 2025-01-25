@@ -44,7 +44,13 @@ theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
 
 -- na razie poniższe twierdzenia dopasowane do poprzedniej
 theorem walsh_even {n : ℕ}{x : ℝ} : walsh (2*n) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then walsh n (2 * x - 1) else 0) := by
-  sorry
+  split_ifs with h_1 h_2
+  unfold walsh
+  simp
+  split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9 h10
+  linarith
+  exfalso
+  all_goals sorry
 
 theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then -walsh n (2 * x - 1) else 0) := by
   sorry

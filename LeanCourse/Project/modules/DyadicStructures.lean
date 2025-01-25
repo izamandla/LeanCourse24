@@ -10,7 +10,6 @@ namespace DyadicStructures
 def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
-
 --Check that 0.4 belongs to the dyadic interval `2^(-5) * 12, 2^(-5)*(12+1)`, i.e. `[0.37500, 0.40625)`.
 example : (0.4 : ℝ) ∈ dyadicInterval (-5) 12 := by
   simp [dyadicInterval]
@@ -21,7 +20,6 @@ example : (0.75 : ℝ) ∉ dyadicInterval (-1) 0 := by
   simp [dyadicInterval]
   norm_num
 
-
 /-- A dyadic rectangle is the Cartesian product of two dyadic intervals. --/
 def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
   (dyadicInterval k n).prod (dyadicInterval k' n')
@@ -30,6 +28,87 @@ def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
   I DONT USE IT - MAYBE I SHOULD GET RID OF IT? --/
 def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
+
+
+/-- A dyadic interval can be split into two smaller dyadic intervals. --/
+lemma dyadicInterval_split (k n : ℤ) :
+  dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
+  ext x
+  simp[dyadicInterval]
+  have h1 : (2 : ℝ ) ^ (k - 1) * 2 = 2 ^ k := by
+    rw[ ← pow_one 2, /-← zpow_mul 2 1 (k-1)-/]
+    sorry
+  constructor
+  intro h
+  obtain ⟨h_1, h_2⟩ := h
+  constructor
+  constructor
+  rw[← mul_assoc]
+  rw[h1]
+  apply h_1
+  rw[mul_add]
+  sorry
+  sorry
+
+theorem dyadicInterval_disjoint_help {k n n' : ℤ} (h : n < n') :
+  (dyadicInterval k n ∩ dyadicInterval k n') = ∅ := by
+  ext x
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+  have h0 : n + 1 ≤ n' := by
+    rw[Int.add_one_le_iff]
+    apply h
+  have h12 : (2 ^ k : ℝ) * (n + 1) ≤ (2 ^ k : ℝ) * n' := by
+    apply mul_le_mul_of_nonneg_left
+    exact_mod_cast h0
+    linarith
+  linarith
+
+  theorem dyadicInterval_disjoint (k n n' : ℤ) (h : n ≠ n') :
+  (dyadicInterval k n ∩ dyadicInterval k n') = ∅ := by
+  by_cases h1 : n<n'
+  apply dyadicInterval_disjoint_help
+  apply h1
+  push_neg at h1
+  have h1' : n' < n := by
+    exact lt_of_le_of_ne h1 (id (Ne.symm h))
+  rw[Set.inter_comm]
+  apply dyadicInterval_disjoint_help
+  apply h1'
+
+
+theorem dyadicInterval_cover (k : ℤ) :
+  ⋃ n : ℤ, dyadicInterval k n = Set.univ := by
+  ext x
+  simp [dyadicInterval]
+  let n := Int.floor (x / (2^k : ℝ))
+  have h1 :  2^k* n ≤ x := by
+    simp[n]
+    ring_nf
+    have : (⌊x / (2^k : ℝ)⌋ : ℝ) ≤ x / (2^k : ℝ) := Int.floor_le (x / (2^k : ℝ))
+    rw[mul_comm,← le_div_iff₀]
+    exact this
+    refine zpow_pos_of_pos ?ha k
+    linarith
+  have h2 : x < 2^k * (n+1) := by
+    unfold n
+    have : x / (2^k : ℝ) < (⌊x / (2^k : ℝ)⌋ + 1 : ℝ) := Int.lt_floor_add_one (x / (2^k : ℝ))
+    rw[mul_comm, ← div_lt_iff₀]
+    exact this
+    refine zpow_pos_of_pos ?ha k
+  exact Filter.frequently_principal.mp fun a ↦ a h1 h2
+
+theorem dyadicInterval_length (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval k n ∧ y ∈ dyadicInterval k n) : |x - y| ≤ (2^k : ℝ) := by
+  simp [dyadicInterval] at h
+  rw[abs_sub_le_iff]
+  constructor
+  simp
+  linarith
+  simp
+  linarith
+
+
+
 
 /-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
 theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
@@ -153,14 +232,14 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
 
 
 
-theorem mul_pow_inequality { k k' n n' : ℕ }
+/-theorem mul_pow_inequality { k k' n n' : ℕ }
   (h : n < n') (h' : k < k') : (2^k : ℝ) * (n+1)  < 2^k' * n'  := by
   rw [← n.add_one_le_iff] at h
   have h0 : 2^k < 2^k' := by
     refine (pow_lt_pow_iff_right ?h).mpr h'
     linarith
   --apply Nat.mul_lt_mul_of_lt_of_le h0 h
-  sorry
+  sorry-/
 
 --case for k smaller and n smaller, both natural
 theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℕ ) (h : k < k'):
@@ -169,18 +248,31 @@ theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℕ ) (h : k < k'):
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
   -- Unfold the definition to make the intervals visible.
   unfold dyadicInterval
-  by_cases h1 : n<n'
+  -- n is smaller than n' so they are disjoint bc 2^k * n is smaller thank 2^k * (n')
+  by_cases h_1 :  2^k' * n' ≤ 2^k * n
+  by_cases h_2 : 2^k * n ≤ 2^k' * (n' + 1)
+  right
   left
+  intros x h1
+  rcases h1 with ⟨h_left, h_right⟩
+  constructor
+  simp
+  sorry
+  sorry
+  have hp :  2 ^ k * (n+1) ≤ 2 ^ k' * (n' + 1) := by
+    sorry
+  sorry
+  sorry
+/-
   ext x
   rw [← Set.setOf_and]
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
- -- apply mul_pow_inequality at h h1
-
+  have h0: x< 2 ^ k * n := sorry --lt_of_le_of_lt h4 h_2
+  --have c : 2 ^ k * n < 2 ^ k * n := lt_of_le_of_lt h1 h'
+  --exact lt_irrefl _ c
   sorry
-  sorry
-
-
+-/
 /- Definition 1.2: Tile-/
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=
   ∃ k n : ℤ, I = dyadicInterval k n ∧ ω = {x | x = 2^(-k)}
