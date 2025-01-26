@@ -16,6 +16,26 @@ namespace DyadicStructures
 def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
+def middle_of_interval (k n : ℤ) : ℝ := 2^(k-1) * (2*n+1)
+
+theorem middle_midpoint (k n : ℤ ) : middle_of_interval k n = midpoint ℝ (2^k * n : ℝ ) (2^k * (n + 1)) := by
+  unfold middle_of_interval
+  unfold  midpoint
+  simp
+  sorry
+
+theorem middle_in (k n : ℤ) : middle_of_interval k n ∈ dyadicInterval k n := by
+  simp [middle_of_interval,dyadicInterval]
+  sorry
+
+theorem split_in_middle (k n : ℤ) : dyadicInterval k n = Set.Ico (n*2^k : ℝ ) (middle_of_interval k n : ℝ ) ∪ Set.Ico (middle_of_interval k n) ((n+1)*2^k) := by
+  ext x
+  simp [dyadicInterval, middle_of_interval]
+  constructor
+  intro h
+  sorry
+  sorry
+
 
 @[simp]
 theorem zero_dyadicInterval : dyadicInterval 0 0 = Set.Ico 0 1 := by
@@ -165,7 +185,8 @@ theorem dyadicInterval_length (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval
   linarith
 
 -- The point 2^(k-1_ * (2n+1) is in the middle of `[2^k * n, 2^k * (n + 1))`
-theorem middle (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval k n ∧ y ∈ dyadicInterval k n) : ∃ z ∈ dyadicInterval k n, |x - z| ≤ (2^(k+1) : ℝ):= by
+theorem middle (k n : ℤ) (x: ℝ ) (h : x ∈ dyadicInterval k n) : |x - middle_of_interval k n| ≤ (2^(k+1) : ℝ):= by
+  simp[middle_of_interval]
   sorry
 
 

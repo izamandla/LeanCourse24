@@ -16,7 +16,11 @@ def haarFunction (x : ℝ) : ℝ :=
 @[simp]
 theorem haarFunction_left_half (x : ℝ) (h : 0 ≤ x ∧ x < 1 / 2) : haarFunction x = 1 := by
   simp [haarFunction, h]
-  intro h1
+  intro h0
+  split_ifs with h1
+  exfalso
+
+  sorry
   sorry
 
 @[simp]
