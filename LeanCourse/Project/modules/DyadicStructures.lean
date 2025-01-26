@@ -2,7 +2,13 @@ import Mathlib
 open Function Set Classical
 noncomputable section
 
-/- ## Dyadic Structures -/
+/-!
+# Dyadic Structures
+
+We define dyadic intervals and dyadic rectangles, along with various
+lemmas about their properties (disjointness, covering the reals, etc.).
+-/
+
 namespace DyadicStructures
 
 /-- Definition 1.1: Dyadic Interval and dyadic rectangle
@@ -10,15 +16,47 @@ namespace DyadicStructures
 def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
---Check that 0.4 belongs to the dyadic interval `2^(-5) * 12, 2^(-5)*(12+1)`, i.e. `[0.37500, 0.40625)`.
-example : (0.4 : ℝ) ∈ dyadicInterval (-5) 12 := by
-  simp [dyadicInterval]
-  norm_num
 
---Check that 0.75 does not belong to the dyadic interval `[0, 0.5) = dyadicInterval -1 0`.
-example : (0.75 : ℝ) ∉ dyadicInterval (-1) 0 := by
+@[simp]
+theorem zero_dyadicInterval : dyadicInterval 0 0 = Set.Ico 0 1 := by
+  ext x
   simp [dyadicInterval]
-  norm_num
+
+@[simp]
+theorem dyadicInterval_of_k_zero (n : ℤ) :
+    dyadicInterval 0 n = Set.Ico (n : ℝ) (n+1) := by
+  ext x
+  simp [Set.Ico, Set.mem_setOf_eq, dyadicInterval, zpow_zero]
+
+@[simp]
+theorem dyadicInterval_of_k_one (n : ℤ) :
+    dyadicInterval 1 n = Set.Ico (2*n : ℝ) (2*n+2) := by
+  ext x
+  simp [Set.Ico, dyadicInterval]
+  intro h
+  ring_nf
+
+@[simp]
+theorem dyadicInterval_of_n_zero (k : ℤ) :
+    dyadicInterval k 0 = Set.Ico (0 : ℝ) (2^k : ℝ) := by
+  ext x
+  simp [dyadicInterval]
+
+
+@[simp]
+theorem dyadicInterval_neg1 (n : ℤ) :
+    dyadicInterval (-1) n = Set.Ico (n/2 : ℝ ) ((n + 1)/2) := by
+  ext x
+  simp [Set.Ico, Set.mem_setOf_eq, dyadicInterval, zpow_neg_one]
+  ring_nf
+
+
+theorem scale_up (k n : ℤ) :
+    dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) ≤ x ∧ x < (2^(k-1) : ℝ)*(2*n+2) } := by
+    ext x
+    simp [dyadicInterval]
+    rw[← mul_assoc]
+    sorry
 
 /-- A dyadic rectangle is the Cartesian product of two dyadic intervals. --/
 def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
@@ -30,14 +68,19 @@ def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
 
 
+--może byłoby łatwiej jakby się wprowadziło mid.point
+
 /-- A dyadic interval can be split into two smaller dyadic intervals. --/
 lemma dyadicInterval_split (k n : ℤ) :
   dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
   ext x
   simp[dyadicInterval]
+  have : 2 = (2 : ℝ)^(1 : ℤ) := by simp
   have h1 : (2 : ℝ ) ^ (k - 1) * 2 = 2 ^ k := by
-    rw[ ← pow_one 2, /-← zpow_mul 2 1 (k-1)-/]
-    sorry
+    calc (2 : ℝ)^(k-1) * 2
+        = (2 : ℝ)^(k-1) * (2 : ℝ)^(1 : ℤ) := by simp
+      _ = (2 : ℝ)^((k-1) + 1)        := by sorry --rw [ ← zpow_add 2 (k-1) 1]
+      _ = 2^k                        := by simp
   constructor
   intro h
   obtain ⟨h_1, h_2⟩ := h
@@ -50,6 +93,9 @@ lemma dyadicInterval_split (k n : ℤ) :
   sorry
   sorry
 
+/--
+If `n < n'`, then the dyadic intervals at scale `k` indexed by `n` and `n'` are disjoint.
+-/
 theorem dyadicInterval_disjoint_help {k n n' : ℤ} (h : n < n') :
   (dyadicInterval k n ∩ dyadicInterval k n') = ∅ := by
   ext x
@@ -64,7 +110,11 @@ theorem dyadicInterval_disjoint_help {k n n' : ℤ} (h : n < n') :
     linarith
   linarith
 
-  theorem dyadicInterval_disjoint (k n n' : ℤ) (h : n ≠ n') :
+  /--
+Dyadic intervals at the same scale `k` and different indices `n ≠ n'` are disjoint.
+-/
+
+  theorem dyadicInterval_disjoint {k n n' : ℤ} (h : n ≠ n') :
   (dyadicInterval k n ∩ dyadicInterval k n') = ∅ := by
   by_cases h1 : n<n'
   apply dyadicInterval_disjoint_help
@@ -76,6 +126,9 @@ theorem dyadicInterval_disjoint_help {k n n' : ℤ} (h : n < n') :
   apply dyadicInterval_disjoint_help
   apply h1'
 
+/--
+The dyadic intervals at scale `k` cover the entire real line.
+-/
 
 theorem dyadicInterval_cover (k : ℤ) :
   ⋃ n : ℤ, dyadicInterval k n = Set.univ := by
@@ -98,6 +151,10 @@ theorem dyadicInterval_cover (k : ℤ) :
     refine zpow_pos_of_pos ?ha k
   exact Filter.frequently_principal.mp fun a ↦ a h1 h2
 
+/--
+Points inside the same dyadic interval at scale `k` are within `(2^k : ℝ)` of each other.
+-/
+
 theorem dyadicInterval_length (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval k n ∧ y ∈ dyadicInterval k n) : |x - y| ≤ (2^k : ℝ) := by
   simp [dyadicInterval] at h
   rw[abs_sub_le_iff]
@@ -107,6 +164,29 @@ theorem dyadicInterval_length (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval
   simp
   linarith
 
+-- The point 2^(k-1_ * (2n+1) is in the middle of `[2^k * n, 2^k * (n + 1))`
+theorem middle (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval k n ∧ y ∈ dyadicInterval k n) : ∃ z ∈ dyadicInterval k n, |x - z| ≤ (2^(k+1) : ℝ):= by
+  sorry
+
+
+
+-------------------------------------------------------mess----------------------------
+
+/-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
+theorem dyadic_intervals_disjoint_or_contained_2ndapproach (k k' n n' : ℤ) :
+  (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
+  (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
+  (dyadicInterval k' n' ⊆ dyadicInterval k n) := by
+  by_cases h : k=k'
+  rw[h]
+  by_cases hn : n=n'
+  rw[hn]
+  simp
+  push_neg at hn
+  left
+  apply dyadicInterval_disjoint hn
+  push_neg at h
+  sorry
 
 
 
