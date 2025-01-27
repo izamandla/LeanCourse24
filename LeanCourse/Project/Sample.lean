@@ -30,6 +30,31 @@ example : (0.75 : ℝ) ∉ dyadicInterval (-1) 0 := by
   simp [dyadicInterval]
   norm_num
 
+def middle_of_interval (k n : ℤ) : ℝ := 2^(k-1) * (2*n+1)
+
+theorem middle_midpoint (k n : ℤ ) : middle_of_interval k n = midpoint ℝ (2^k * n : ℝ ) (2^k * (n + 1)) := by
+  unfold middle_of_interval
+  unfold  midpoint
+  simp
+  sorry
+
+theorem middle_in (k n : ℤ) : middle_of_interval k n ∈ dyadicInterval k n := by
+  simp [middle_of_interval,dyadicInterval]
+  sorry
+
+theorem split_in_middle (k n : ℤ) : dyadicInterval k n = Set.Ico (n*2^k : ℝ ) (middle_of_interval k n : ℝ ) ∪ Set.Ico (middle_of_interval k n) ((n+1)*2^k) := by
+  ext x
+  simp [dyadicInterval, middle_of_interval]
+  constructor
+  intro h
+  sorry
+  sorry
+-- The point 2^(k-1_ * (2n+1) is in the middle of `[2^k * n, 2^k * (n + 1))`
+theorem middle (k n : ℤ) (x: ℝ ) (h : x ∈ dyadicInterval k n) : |x - middle_of_interval k n| ≤ (2^(k+1) : ℝ):= by
+  simp[middle_of_interval]
+  sorry
+
+
 
 /-- A dyadic rectangle is the Cartesian product of two dyadic intervals. --/
 def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
@@ -168,6 +193,10 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
     sorry
   linarith
+
+--idk if i need that
+theorem when_x_in_dyadic (k n : ℤ) (x : ℝ ) : x ∈ dyadicInterval k n ↔ (|x - (2^k * n)| ≤ (2^k : ℝ)) ∧ (|x - (2^k * (n+1))| ≤ (2^k : ℝ)) := by
+  sorry
 
 --doing first for k smaller than k' and using it in lemma
 theorem dyadic_intervals_disjoint_or_contained1 (k k' n n' : ℤ) (h : k < k') :
