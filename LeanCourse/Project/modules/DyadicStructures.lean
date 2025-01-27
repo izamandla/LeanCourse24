@@ -62,9 +62,10 @@ theorem dyadicInterval_of_n_one (k : ℤ) :
   simp [dyadicInterval]
   intro h
   have h1 : 2 ^ k * (1 + 1) = (2 ^ (k + 1) : ℝ) := by
+    have : 2 ≠ 0 := two_ne_zero
     calc (2 : ℝ)^k*(1+1)
-        = 2*(2 : ℝ)^(k) := by sorry
-      _ = (2 ^ (k + 1) : ℝ):= by sorry
+        = (2 : ℝ  )^(k)*2 := by ring_nf
+      _ = (2 : ℝ)^(k + 1) := by rw [← zpow_add_one₀ two_ne_zero k]
   rw [h1]
 
 /--
@@ -85,15 +86,21 @@ A dyadic interval at scale `k` can be expressed as a union of two smaller interv
 theorem scale_up (k n : ℤ) : dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) ≤ x ∧ x < (2^(k-1) : ℝ)*(2*n+2) } := by
   ext x
   simp [dyadicInterval]
-  rw[← mul_assoc]
+  rw[← mul_assoc,← zpow_add_one₀ two_ne_zero (k-1)]
+  simp
+  intro h1
   constructor
-  intro h
-  constructor
-  let h_1 :=h.1
-  rw[ ← mul_comm 2]--,mul_self_zpow 2 (k-1)]
-  sorry
-  sorry
-  sorry
+  intro h2
+  rw[mul_add, ← mul_assoc, ← zpow_add_one₀ two_ne_zero (k-1)]
+  simp
+  rw [← mul_one (2^k), mul_assoc, one_mul, ← mul_add]
+  apply h2
+  intro h2
+  rw[mul_add, ← mul_assoc, ← zpow_add_one₀ two_ne_zero (k-1)] at h2
+  simp at h2
+  rw [← mul_one (2^k), mul_assoc, one_mul, ← mul_add] at h2
+  apply h2
+
 
 
 /-- A dyadic interval can be split into two smaller dyadic intervals. --/
@@ -101,21 +108,16 @@ lemma dyadicInterval_split (k n : ℤ) :
   dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
   ext x
   simp[dyadicInterval]
-  have : 2 = (2 : ℝ)^(1 : ℤ) := by simp
-  have h1 : (2 : ℝ ) ^ (k - 1) * 2 = 2 ^ k := by
-    calc (2 : ℝ)^(k-1) * 2
-        = (2 : ℝ)^(k-1) * (2 : ℝ)^(1 : ℤ) := by simp
-      _ = (2 : ℝ)^((k-1) + 1)        := by sorry --rw [ ← zpow_add 2 (k-1) 1]
-      _ = 2^k                        := by simp
   constructor
   intro h
   obtain ⟨h_1, h_2⟩ := h
   constructor
   constructor
-  rw[← mul_assoc]
-  rw[h1]
+  rw[← mul_assoc,← zpow_add_one₀ two_ne_zero (k-1)]
+  simp
   apply h_1
-  rw[mul_add]
+  rw[mul_add, ← mul_assoc, ← zpow_add_one₀ two_ne_zero (k-1)]
+  simp
   sorry
   sorry
 
