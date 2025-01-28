@@ -21,7 +21,6 @@ The kernel function at `N = 0` is constant 1.
 -/
 theorem kernel_zero (x y : ℝ) : kernel 0 x y = 1 := by
   unfold kernel
-  --apply Walsh.binaryRepresentationSet_zero
   sorry
 
 
@@ -30,7 +29,7 @@ Kernel function for binary powers `N = 2^m`.
 -/
 theorem kernel_two_pow (m : ℕ) (x y : ℝ) : kernel (2^m) x y = 1 + ∑ n in Finset.range (2^m), (Haar.haarFunctionScaled m n x) * (Haar.haarFunctionScaled m n y) := by
     sorry
---co zrobić z tym m - czy muszę je wpisywać w argumentach?
+
 
 end Kernel
 

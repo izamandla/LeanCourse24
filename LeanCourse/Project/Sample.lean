@@ -504,3 +504,23 @@ theorem mainresult (N : ℕ) (f : ℝ → ℝ) (x : ℝ) :
   apply Subset.antisymm ?h₁ ?h₂
   --apply Set.Ico_subset_Ico_union_Ico
   sorry-/
+
+
+
+/--
+Definition 1.4: Walsh Function `W_n(x)`.
+-/
+/-def walsh (n : ℕ) : ℝ → ℝ
+| x =>
+  if n = 0 then 1 -- Base case: W₀(x) = 1 (to jest na wszystkim nie tylko na [0,1] Zmień!!! - można ułatwić po przez jeden warunek z x<1/2)
+  else if n % 2 = 0 then -- Case for even n (n = 2m)
+    let m := n / 2
+    if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
+    else if 0.5 ≤ x ∧ x < 1 then  walsh m (2 * x - 1)
+    else 0
+  else -- Case for odd n (n = 2m + 1)
+    let m := n / 2
+    if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
+    else if 0.5 ≤ x ∧ x < 1 then -walsh m (2 * x - 1)
+    else 0
+    #check walsh.induct-/

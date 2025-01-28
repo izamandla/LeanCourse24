@@ -5,24 +5,6 @@ noncomputable section
 /- ## Walsh Functions and Walsh-Fourier Series -/
 namespace Walsh
 
-/--
-Definition 1.4: Walsh Function `W_n(x)`.
--/
-/-def walsh (n : ℕ) : ℝ → ℝ
-| x =>
-  if n = 0 then 1 -- Base case: W₀(x) = 1 (to jest na wszystkim nie tylko na [0,1] Zmień!!! - można ułatwić po przez jeden warunek z x<1/2)
-  else if n % 2 = 0 then -- Case for even n (n = 2m)
-    let m := n / 2
-    if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
-    else if 0.5 ≤ x ∧ x < 1 then  walsh m (2 * x - 1)
-    else 0
-  else -- Case for odd n (n = 2m + 1)
-    let m := n / 2
-    if 0≤ x ∧ x < 0.5 then walsh m (2 * x)
-    else if 0.5 ≤ x ∧ x < 1 then -walsh m (2 * x - 1)
-    else 0
-    #check walsh.induct-/
-
 def walsh (n : ℕ) : ℝ → ℝ
 | x =>
   if x <0 ∨  1 ≤  x then 0
@@ -42,17 +24,36 @@ def walsh (n : ℕ) : ℝ → ℝ
 theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
   simp [walsh, h]
 
--- na razie poniższe twierdzenia dopasowane do poprzedniej
-theorem walsh_even {n : ℕ}{x : ℝ} : walsh (2*n) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then walsh n (2 * x - 1) else 0) := by
-  split_ifs with h_1 h_2
-  unfold walsh
-  simp
-  split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9 h10
-  linarith
-  exfalso
-  all_goals sorry
 
-theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if 0 ≤ x ∧ x < 0.5 then walsh n (2 * x) else if 0.5 ≤ x ∧ x < 1 then -walsh n (2 * x - 1) else 0) := by
+@[simp]
+theorem walsh_not_in {n : ℕ} (x : ℝ) (h : x < 0 ∨  1 ≤ x ) : walsh n x = 0 := by
+  unfold walsh
+  split_ifs with h1 h2
+  exact if_pos h
+  simp[h]
+  simp[h]
+
+/--
+Walsh functions are nonzero on `[0,1)`
+-/
+theorem walsh_in (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) : walsh n x ≠ 0 := by
+  unfold walsh
+  split_ifs with h1 h2
+  simp[h]
+  simp[h]
+  push_neg
+  sorry
+  simp[h]
+  push_neg
+  sorry
+
+
+
+-- na razie poniższe twierdzenia dopasowane do poprzedniej
+theorem walsh_even {n : ℕ}{x : ℝ} : walsh (2*n) x = (if x < 0.5 then walsh n (2 * x) else walsh n (2 * x - 1)) := by
+  sorry
+
+theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if x < 0.5 then walsh n (2 * x) else -walsh n (2 * x - 1)) := by
   sorry
 
 --to na razie jest dla walsha zdefiniowanego na przedziale
@@ -67,19 +68,6 @@ theorem walsh_even_oddd {n : ℕ}{x : ℝ} : if  0.5 ≤ x ∧ x < 1 then walsh 
   all_goals sorry
 
 
-/--
-Walsh functions are nonzero on their domain
--/
-theorem walsh_nonneg (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) : walsh n x ≠ 0 := by
-  simp
-  unfold walsh
-  simp
-  constructor
-  apply h.1
-  constructor
-  apply h.2
-  by_contra
-  sorry
 
 /--
 Walsh function is zero outside the interval `[0, 1)`
@@ -205,7 +193,7 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   intro h1
   rcases h1 with ⟨hr, hl⟩
   rw [mem_binaryRepresentationSet_iff N x] at hr
-  refine (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
+  apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
   --apply Nat.testBit_implies_ge at hr
   sorry
   /- maybe useful in the future apply Nat.size_le -/
