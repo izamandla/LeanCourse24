@@ -16,6 +16,10 @@ def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
 
+theorem intervalform_dyadicInterval {k n : ℤ}: dyadicInterval k n = Set.Ico ((2^k: ℝ) *n) ((2^k : ℝ )* (n + 1)) := by
+  ext x
+  simp [dyadicInterval]
+
 /-- Special case: the dyadic interval with `k,n = 0` is `[0, 1)`. --/
 @[simp]
 theorem zero_dyadicInterval : dyadicInterval 0 0 = Set.Ico 0 1 := by
@@ -83,7 +87,7 @@ theorem dyadicInterval_length (k n : ℤ) (x y : ℝ ) (h : x ∈ dyadicInterval
 A dyadic interval at scale `k` can be expressed as a union of two smaller intervals of the scale `k - 1`.
 -/
 
-theorem scale_up (k n : ℤ) : dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) ≤ x ∧ x < (2^(k-1) : ℝ)*(2*n+2) } := by
+theorem scale_up {k n : ℤ} : dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) ≤ x ∧ x < (2^(k-1) : ℝ)*(2*n+2) } := by
   ext x
   simp [dyadicInterval]
   rw[← mul_assoc,← zpow_add_one₀ two_ne_zero (k-1)]
@@ -104,22 +108,17 @@ theorem scale_up (k n : ℤ) : dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) 
 
 
 /-- A dyadic interval can be split into two smaller dyadic intervals. --/
-lemma dyadicInterval_split (k n : ℤ) :
+theorem dyadicInterval_split (k n : ℤ) :
   dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
+  rw[scale_up, intervalform_dyadicInterval, intervalform_dyadicInterval]
+  simp
   ext x
-  simp[dyadicInterval]
   constructor
   intro h
   obtain ⟨h_1, h_2⟩ := h
-  constructor
-  constructor
-  rw[← mul_assoc,← zpow_add_one₀ two_ne_zero (k-1)]
-  simp
-  apply h_1
-  rw[mul_add, ← mul_assoc, ← zpow_add_one₀ two_ne_zero (k-1)]
-  simp
   sorry
   sorry
+
 
 
 /--
@@ -137,14 +136,14 @@ theorem dyadicInterval_cover (k : ℤ) :
     have : (⌊x / (2^k : ℝ)⌋ : ℝ) ≤ x / (2^k : ℝ) := Int.floor_le (x / (2^k : ℝ))
     rw[mul_comm,← le_div_iff₀]
     exact this
-    refine zpow_pos_of_pos ?ha k
+    apply zpow_pos_of_pos ?ha k
     linarith
   have h2 : x < 2^k * (n+1) := by
     unfold n
     have : x / (2^k : ℝ) < (⌊x / (2^k : ℝ)⌋ + 1 : ℝ) := Int.lt_floor_add_one (x / (2^k : ℝ))
     rw[mul_comm, ← div_lt_iff₀]
     exact this
-    refine zpow_pos_of_pos ?ha k
+    apply zpow_pos_of_pos ?ha k
   exact Filter.frequently_principal.mp fun a ↦ a h1 h2
 
 /--
@@ -190,7 +189,7 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
   left
   intros x h1
   rcases h1 with ⟨h_left, h_right⟩
-  refine mem_setOf.mpr ?_
+  apply mem_setOf.mpr ?_
   have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
     apply le_trans hn1
     rw [mul_comm]

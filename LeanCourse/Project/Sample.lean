@@ -493,3 +493,14 @@ theorem lemma2 (M N N' : ℕ) (h1 : 2^M ≤ N ∧ N < 2^(M+1)) (h2 : N' = N - 2^
 theorem mainresult (N : ℕ) (f : ℝ → ℝ) (x : ℝ) :
   Walsh.WalshFourierPartialSum f N x = (∫ y in Set.Icc 0 1, f y * Walsh.walsh N y * Walsh.walsh N x * Kernel.kernel N x y) := by
   sorry
+
+
+/-  have h0 : {x | (2 ^ (k - 1) : ℝ ) * (2 * ↑n) ≤ x ∧ x < (2 ^ (k - 1) : ℝ) * (2 * ↑n + 2)} = Set.Ico ((2 ^ (k - 1) : ℝ ) * (2 * ↑n) ) (2 ^ (k - 1) * (2 * ↑n + 2)) := by
+    sorry
+  rw[h0]
+  let a := ((2 ^ (k - 1) : ℝ) * (2 * ↑n))
+  let b := (2 ^ (k - 1) : ℝ ) * (2 * ↑n + 2)
+  let c:= (2 ^ (k - 1): ℝ ) * (2 * ↑n + 1)
+  apply Subset.antisymm ?h₁ ?h₂
+  --apply Set.Ico_subset_Ico_union_Ico
+  sorry-/
