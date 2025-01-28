@@ -16,10 +16,6 @@ def dyadicInterval (k n : ℤ) : Set ℝ :=
   { x | (2^k : ℝ) * n ≤ x ∧ x < (2^k : ℝ) * (n + 1) }
 
 
-theorem intervalform_dyadicInterval {k n : ℤ}: dyadicInterval k n = Set.Ico ((2^k: ℝ) *n) ((2^k : ℝ )* (n + 1)) := by
-  ext x
-  simp [dyadicInterval]
-
 /-- Special case: the dyadic interval with `k,n = 0` is `[0, 1)`. --/
 @[simp]
 theorem zero_dyadicInterval : dyadicInterval 0 0 = Set.Ico 0 1 := by
@@ -72,6 +68,12 @@ theorem dyadicInterval_of_n_one (k : ℤ) :
       _ = (2 : ℝ)^(k + 1) := by rw [← zpow_add_one₀ two_ne_zero k]
   rw [h1]
 
+
+/-- General case: writting dyadic as Ico-/
+theorem intervalform_dyadicInterval {k n : ℤ}: dyadicInterval k n = Set.Ico ((2^k: ℝ) *n) ((2^k : ℝ )* (n + 1)) := by
+  ext x
+  simp [dyadicInterval]
+
 /--
 Points inside the same dyadic interval at scale `k` are within `(2^k : ℝ)` of each other.
 -/
@@ -116,6 +118,7 @@ theorem dyadicInterval_split (k n : ℤ) :
   constructor
   intro h
   obtain ⟨h_1, h_2⟩ := h
+  apply Set.Ico_subset_Ico_union_Ico
   sorry
   sorry
 
@@ -177,7 +180,9 @@ theorem dyadicInterval_disjoint {k n n' : ℤ} (h : n ≠ n') : (dyadicInterval 
   apply dyadicInterval_disjoint_help
   apply h1'
 
-
+/--
+Case when dyadic intervals with the scales `k<k'` - then they are disjoint or one is contained in the other.
+-/
 
 theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
   dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
@@ -218,7 +223,7 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
 
 
 /-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
-theorem dyadic_intervals_disjoint_or_contained_2ndapproach (k k' n n' : ℤ) :
+theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
   (dyadicInterval k' n' ⊆ dyadicInterval k n) := by

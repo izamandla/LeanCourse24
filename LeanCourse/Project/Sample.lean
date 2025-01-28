@@ -524,3 +524,29 @@ Definition 1.4: Walsh Function `W_n(x)`.
     else if 0.5 ≤ x ∧ x < 1 then -walsh m (2 * x - 1)
     else 0
     #check walsh.induct-/
+
+/-theorem binaryRepresentationSet_subset (n : ℕ) :
+  binaryRepresentationSet n ⊆ Finset.range (Nat.size n + 1) := by
+  -- Binary representation is a subset of the valid range.
+  sorry
+
+
+  @[simp]
+theorem haarFunctionScaled_specific (k n : ℕ) (x : ℝ) (h : n * 2 ^ k ≤ x ∧ x < (n + 1) * 2 ^ k) :
+  haarFunctionScaled k n x = 2^(k / 2 : ℝ) * haarFunction (2^k * x - n) := by
+  simp [haarFunctionScaled]
+
+  theorem rademacherFunction_orthogonal (k m : ℕ) : ∫ x in Set.Icc 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
+  by_cases h : k = m
+    rw [h]
+    simp_rw [rademacherFunction]
+    /-rw [← Finset.sum_singleton]
+    apply haarFunctionScaled_normalization
+  · -- Case k ≠ m: Use orthogonality of Haar functions.
+    simp_rw [rademacherFunction]
+    rw [← Finset.sum_singleton]
+    apply haarFunctionScaled_orthogonal
+    exact h-/
+    sorry
+  sorry
+-/
