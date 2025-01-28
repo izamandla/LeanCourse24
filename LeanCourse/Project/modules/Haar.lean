@@ -18,49 +18,111 @@ Left half of haar function is equal to one.
 -/
 @[simp]
 theorem haarFunction_left_half (x : ℝ) (h : 0 ≤ x ∧ x < 1 / 2) : haarFunction x = 1 := by
-  simp [haarFunction, h]
-  intro h0
-  split_ifs with h1
-  exfalso
-  sorry
-  sorry
+  unfold haarFunction
+  exact if_pos h
 
 /--
 Right half of haar function is equal to minus one.
 -/
 @[simp]
 theorem haarFunction_right_half (x : ℝ) (h : 1 / 2 ≤ x ∧ x < 1) : haarFunction x = -1 := by
-  simp [haarFunction, h]
-  sorry
+  unfold haarFunction
+  split_ifs with h1
+  linarith
+  linarith
 
 /--
 Haar function is 0 outisde`[0,1)`.
 -/
 @[simp]
 theorem haarFunction_outside (x : ℝ) (h : x < 0 ∨ x ≥ 1) : haarFunction x = 0 := by
-  simp [haarFunction, h]
-  sorry
+  unfold haarFunction
+  split_ifs with h1 h2
+  have h3 : ¬ (x < 0 ∨ x ≥ 1) := by
+    let ⟨hP, hQ⟩ := h1
+    push_neg
+    constructor
+    apply hP
+    exact lt_trans hQ (by norm_num)
+  contradiction
+  have h3 : ¬ (x < 0 ∨ x ≥ 1) := by
+    let ⟨hP, hQ⟩ := h2
+    push_neg
+    constructor
+    exact le_trans (by norm_num) hP
+    apply hQ
+  contradiction
+  linarith
+
+@[simp]
+theorem haar_sqr (x : ℝ): (haarFunction x)^2 = if 0 ≤ x ∧ x < 1 then 1 else 0 := by
+  split_ifs with h
+  let ⟨hP, hQ⟩ := h
+  by_cases h1 : x< 1/2
+  rw[haarFunction_left_half ]
+  simp
+  constructor
+  apply hP
+  apply h1
+  push_neg at h1
+  rw[haarFunction_right_half ]
+  simp
+  constructor
+  apply h1
+  apply hQ
+  rw[not_and_or] at h
+  push_neg at h
+  rw[sq_eq_zero_iff]
+  apply haarFunction_outside
+  apply h
 
 /--
 The integral of Haar function over `[0,1)` equals 0.
 -/
-@[simp]
-theorem haar_integral : ∫ x in Set.Icc 0 1, haarFunction x = 0 := by
-  simp [haarFunction]
+--@[simp]
+theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
+  --simp [haarFunction]
+  have h1 : Set.Ico 0 1 = Set.Ico 0 (1/2) ∪ Set.Ico (1/2) 1 := by
+    simp
+  have h2 : Disjoint (Set.Ico 0 (1/2)) (Set.Ico (1/2) 1) := by
+    simp
+
   sorry
+
 
 /--
 The integral of squere of Haar function over `[0,1)` equals 1.
 -/
 theorem haar_integral_sqr : ∫ x in Set.Icc 0 1, (haarFunction x)^2 = 1 := by
-  simp [haarFunction]
   sorry
 
 /--
 Definition of caled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
 -/
 def haarFunctionScaled (k n : ℕ) (x : ℝ) : ℝ :=
-  2^(k / 2 : ℝ) * haarFunction (2^k * x - n)
+  2^((k / 2) : ℝ) * haarFunction (2^k * x - n)
+
+
+/--
+Left half of scaled Haar function is equal to `2^(k / 2)`.
+-/
+@[simp]
+theorem haarFunctionScaled_left_half (k n : ℕ) (x : ℝ) (h : 0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1 / 2) :
+  haarFunctionScaled k n x = 2 ^ ((k / 2) : ℝ) := by
+  simp[haarFunctionScaled]
+  rw [haarFunction_left_half _ h]
+  simp
+
+
+/--
+Right half of the scaled Haar function is equal to `-2^(k / 2)`.
+-/
+@[simp]
+theorem haarFunctionScaled_right_half (k n : ℕ) (x : ℝ) (h : 1 / 2 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1) :
+  haarFunctionScaled k n x = -2 ^ (k / 2 : ℝ) := by
+  unfold haarFunctionScaled
+  rw [haarFunction_right_half _ h]
+  simp
 
 
 /--
@@ -76,11 +138,40 @@ theorem haarFunctionScaled_orthogonal {k n n' : ℕ} (h_diff : n ≠ n') : ∫ x
 /--
 Scaled Haar function is 0 outside `[2^k n, 2^k (n+1))`.
 -/
-theorem haarFunctionScaled_support (k n : ℕ) (x : ℝ) :
-  haarFunctionScaled k n x ≠ 0 ↔ n * 2^k ≤ x ∧ x < (n + 1) * 2^k := by
-  simp [haarFunctionScaled, haarFunction]
+@[simp]
+theorem haarFunctionScaled_outside (k n : ℕ) (x : ℝ)
+  (h : 2 ^ k * x - n < 0 ∨ 2 ^ k * x - n ≥ 1) :
+  haarFunctionScaled k n x = 0 := by
+  unfold haarFunctionScaled
+  rw [haarFunction_outside _ h]
+  simp
+
+/--
+The square of the scaled Haar function is `2^k` within its support and `0` outside.
+-/
+@[simp]
+theorem haarFunctionScaled_sqr (k n : ℕ) (x : ℝ) :
+  (haarFunctionScaled k n x) ^ 2 = if 0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1 then 2 ^ k else 0 := by
+  simp[haarFunctionScaled]
+  rw[mul_pow, haar_sqr (2 ^ k * x - ↑n)]
+  simp
+  have : (2 ^ (↑k / 2) : ℝ ) ^ 2 = 2^k := by
+    rw [← pow_mul]
+    simp
+    by_cases h : Even k
+    exact Nat.div_two_mul_two_of_even h
+    rw[k.not_even_iff_odd] at h
+    --czy wszytko jest do wywalenia? bo dzielenie nam rozwala k :(
+    sorry
+  --rw[this]
   sorry
 
+ /-
+  theorem haarFunctionScaled_support (k n : ℕ) (x : ℝ) :
+  haarFunctionScaled k n x ≠ 0 ↔ n * 2^k ≤ x ∧ x < (n + 1) * 2^k := by
+  unfold haarFunctionScaled
+  rw [haarFunction_outside]
+  simp-/
 /--
 Product of scaled Haar functions on the same interval.
 -/
@@ -106,6 +197,15 @@ Definition of the Rademacher function `r_n(x)`.
 -/
 def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
   2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled k n t
+
+
+@[simp]
+theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
+  rademacherFunction k t = 0 := by
+  unfold rademacherFunction
+  /-have h1 (m : ℕ): haarFunctionScaled k m t = 0 := by
+    apply haarFunctionScaled_outside-/
+  sorry
 
 /--
 Orthogonality of Rademacher functions.

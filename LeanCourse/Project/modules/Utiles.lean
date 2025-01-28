@@ -20,8 +20,9 @@ def kernel (N : ℕ) (x y : ℝ) : ℝ :=
 The kernel function at `N = 0` is constant 1.
 -/
 theorem kernel_zero (x y : ℝ) : kernel 0 x y = 1 := by
-  unfold kernel
-  sorry
+  simp[kernel]
+  rw[Walsh.binaryRepresentationSet_zero]
+  exact rfl
 
 
 /--
@@ -39,18 +40,13 @@ Relation between Haar function and Walsh functions.
 -/
 
 theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
-  unfold Walsh.walsh
-  simp
-  split_ifs with h
-  sorry
-  sorry
-  sorry
+  rw[Walsh.walsh_one]
+  simp[Haar.haarFunction]
 
 
 /--
 Walsh functions expressed using products of Rademacher functions.
 -/
---this is not necesserly true (bc of changed definition - check!)
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
   sorry
@@ -62,6 +58,9 @@ theorem differentwalshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh (2^n) x = Haar.rademacherFunction n x := by
   sorry
 
+/--
+Walsh-Rademacher relation.
+-/
 theorem walshRademacherRelationresult {M N : ℕ} (h : 2^M ≤ N) (x : ℝ) :
   Walsh.walsh N x = Walsh.walsh (2^M) x * ∏ m in Walsh.binaryRepresentationSet (N - (2^M)) , Haar.rademacherFunction m x := by
   simp [walshRademacherRelation]

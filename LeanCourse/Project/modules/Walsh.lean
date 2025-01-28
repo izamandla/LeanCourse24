@@ -31,6 +31,18 @@ Special case: Walsh function for n=0 is 1 on `[0,1)`.
 theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
   simp [walsh, h]
 
+
+/--
+Special case: Walsh function for n=1.
+-/
+@[simp]
+theorem walsh_one (x : ℝ) : walsh 1 x = if 0 ≤ x ∧ x < 1/2 then 1 else if 1/2 ≤ x ∧ x < 1 then -1 else 0:= by
+  split_ifs with h1 h2
+  unfold walsh
+  simp
+  rw[walsh_zero]
+  all_goals sorry
+
 /--
 Walsh function is 0 outisde`[0,1)`.
 -/
