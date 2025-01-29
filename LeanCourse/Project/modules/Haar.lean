@@ -158,16 +158,12 @@ theorem haarFunctionScaled_sqr (k n : ℕ) (x : ℝ) :
   simp[haarFunctionScaled]
   rw[mul_pow, haar_sqr (2 ^ k * x - ↑n)]
   simp
-  have : (2 ^ (↑k / 2) : ℝ ) ^ 2 = 2^k := by
-    rw [← pow_mul]
+  have : (2 ^ (↑k / 2:ℝ) : ℝ ) ^ 2 = 2^k := by
+    rw [← Real.rpow_mul_natCast]
     simp
-    by_cases h : Even k
-    exact Nat.div_two_mul_two_of_even h
-    rw[k.not_even_iff_odd] at h
-    --czy wszytko jest do wywalenia? bo dzielenie nam rozwala k :(
-    sorry
-  --rw[this]
-  sorry
+    linarith
+  rw[this]
+
 
  /-
   theorem haarFunctionScaled_support (k n : ℕ) (x : ℝ) :
