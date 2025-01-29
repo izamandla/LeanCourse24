@@ -79,15 +79,18 @@ theorem haar_sqr (x : ℝ): (haarFunction x)^2 = if 0 ≤ x ∧ x < 1 then 1 els
 /--
 The integral of Haar function over `[0,1)` equals 0.
 -/
+
 --@[simp]
 theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
-  --simp [haarFunction]
-  have h1 : Set.Ico 0 1 = Set.Ico 0 (1/2) ∪ Set.Ico (1/2) 1 := by
-    simp
-  have h2 : Disjoint (Set.Ico 0 (1/2)) (Set.Ico (1/2) 1) := by
-    simp
-
+  have h1 {μ}: IntervalIntegrable haarFunction μ 0 (1/2) := by
+    sorry
+  have h2 {μ}: IntervalIntegrable haarFunction μ (1/2) 1 := by
+    sorry
+  rw[ ← MeasureTheory.integral_Icc_eq_integral_Ico, MeasureTheory.integral_Icc_eq_integral_Ioc', ← intervalIntegral.integral_of_le, ←  intervalIntegral.integral_add_adjacent_intervals h1 h2]
   sorry
+  linarith
+  simp
+
 
 
 /--
