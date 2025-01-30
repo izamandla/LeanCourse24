@@ -237,15 +237,11 @@ theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :wa
 Walsh functions are nonzero on `[0,1)`
 -/
 theorem walsh_in (n : ℕ) (x : ℝ) (h1 : 0 ≤ x) (h2: x < 1) : walsh n x ≠ 0 := by
-  by_cases h0 : n % 2 =0
-  --apply Int.even_or_odd' at h0
-  · by_cases h : x<1/2
-    · sorry
-    · sorry
-  push_neg at h0
-  · by_cases h : x<1/2
-    · sorry
-    · sorry
+  by_contra h
+  --obtain ⟨ k, hk⟩  := Nat.even_or_odd' n
+  --obtain hl|hr := hk
+  sorry
+
 
 
 
@@ -257,9 +253,18 @@ theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : 
   simp [walsh, h]
 
 
-/--
+/--0,`
 Multiplying Wlash functions of fixed `n` and different arguments.
 -/
+theorem mul_walsh1 {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n x)*(walsh n y ) =  0:= by
+  rw[walsh_not_in]
+  simp
+  exact  h
+
+theorem mul_walsh1' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n y )*(walsh n x) =  0:= by
+  rw[mul_comm, mul_walsh1]
+  exact  h
+
 theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
   sorry
 
@@ -321,7 +326,13 @@ Walsh inner product of sum of functions.
 -/
 theorem walshInnerProduct_add (f g : ℝ → ℝ) (n : ℕ) :
   walshInnerProduct (λ x => f x + g x) n = walshInnerProduct f n + walshInnerProduct g n := by
+  unfold walshInnerProduct
+  simp
+  rw[← MeasureTheory.integral_add]
+  simp[add_mul]
   sorry
+  sorry
+
 
 /--
 Definition of Walsh Fourier partial sum.
@@ -374,6 +385,7 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   constructor
   intro h1
   rcases h1 with ⟨hr, hl⟩
+  push_neg at hl
   rw [mem_binaryRepresentationSet_iff N x] at hr
   apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
   --apply Nat.testBit_implies_ge at hr
