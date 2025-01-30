@@ -266,12 +266,18 @@ theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 
 /--
 Multiplying Wlash functions of fixed `n` and same arguments.
 -/
-theorem sqr_walsh {n : ℕ} (x : ℝ) (h : 0 ≤ x ∧ x < 1) : (walsh n x)*(walsh n x) = 1 := by
+theorem sqr_walsh {n : ℕ} (x : ℝ) (h1 : 0 ≤ x)(h2: x < 1) : (walsh n x)*(walsh n x) = 1 := by
   rw[mul_walsh]
   simp
-  sorry
-
-
+  split_ifs with h_1 h_2
+  · exfalso
+    obtain h_l1|h_r1 :=h_1
+    · linarith
+    · linarith
+  · rfl
+  · exfalso
+    push_neg at h_1 h_2
+    linarith
 
 /--
 Walsh inner product definition.
