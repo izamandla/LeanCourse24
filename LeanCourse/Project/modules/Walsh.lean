@@ -101,42 +101,125 @@ theorem walsh_one_right (x : ℝ) (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh 1 x = -1:
 Walsh function for n being even.
 -/
 theorem walsh_even_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2*n) x = walsh n (2 * x) := by
-  unfold walsh
-  --have h : ¬ ( x <0 ∨  1 ≤  x) := by sorry
-  /-simp--[h]
+  conv_lhs =>
+    unfold walsh
+  simp
   split_ifs with h_1 h_2 h_3 h_4
   · exfalso
-    obtain h_l|h_r := h_1
+    obtain hl|hp := h_1
     · linarith
     · linarith
-  · exfalso
-    obtain h_l|h_r := h_3
+  · push_neg at h_1
+    rw[h_3]
+    rw[walsh_zero (2*x)]
+    constructor
     · linarith
     · linarith
   · rfl
-  · exfalso
-    obtain h_l|h_r := h_4
-    · push_neg at h_2
-      simp_all
-      linarith
+  · push_neg at h_1 h_2
+    rw[h_4]
+    rw[walsh_zero (2*x)]
+    constructor
     · linarith
-  · exfalso
-    push_neg at h_1 h_4
-    linarith-/
-  sorry
-
-
+    · linarith
+  · push_neg at h_1 h_2 h_4
+    exfalso
+    simp_all
+    linarith
 
 
 theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh (2*n) x = walsh n (2 * x - 1) := by
-  sorry
+  conv_lhs =>
+    unfold walsh
+  simp
+  split_ifs with h_1 h_2 h_3 h_4
+  · exfalso
+    obtain hl|hp := h_1
+    · linarith
+    · linarith
+  · push_neg at h_1
+    rw[h_3]
+    rw[walsh_zero (2*x-1)]
+    constructor
+    · linarith
+    · linarith
+  · push_neg at h_1 h_3
+    exfalso
+    simp_all
+    linarith
+  · push_neg at h_1 h_2
+    rw[h_4]
+    rw[walsh_zero (2*x-1)]
+    constructor
+    · linarith
+    · linarith
+  · rfl
+
 
 /--
 Walsh function for n being odd.
 -/
-theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if x < 0.5 then walsh n (2 * x) else -walsh n (2 * x - 1)) := by
-  sorry
 
+theorem walsh_odd_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2*n +1) x = walsh n (2 * x) := by
+  conv_lhs =>
+    unfold walsh
+  simp
+  have h_odd0 : Odd (2 * n + 1) := by
+    simp
+  have h_odd : (2 * n + 1) / 2 = n := by
+    sorry
+  split_ifs with h_1 h_2 h_3
+  · exfalso
+    obtain hl|hp := h_1
+    · linarith
+    · linarith
+  · push_neg at h_1
+    rw[h_odd]
+  · rw[h_odd]
+    push_neg at h_1 h_2
+    exfalso
+    rw[Nat.odd_iff] at h_odd0
+    linarith
+  · push_neg at h_1 h_2 h_3
+    rw[h_odd]
+    simp_all
+    linarith
+
+theorem walsh_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh (2*n+ 1) x =- walsh n (2 * x - 1) := by
+  conv_lhs =>
+    unfold walsh
+  simp
+  have h_odd0 : Odd (2 * n + 1) := by
+    simp
+  have h_odd : (2 * n + 1) / 2 = n := by
+    sorry
+  split_ifs with h_1 h_2 h_3
+  · exfalso
+    obtain hl|hp := h_1
+    · linarith
+    · linarith
+  · push_neg at h_1
+    exfalso
+    simp_all
+    linarith
+  · rw[h_odd]
+    push_neg at h_1 h_2
+    exfalso
+    rw[Nat.odd_iff] at h_odd0
+    linarith
+  · push_neg at h_1 h_2 h_3
+    rw[h_odd]
+
+
+/--
+Relation between Walsh function of `2n` and `2n+1`.
+-/
+theorem walsh_even_odd_left {n : ℕ}{x : ℝ} (h1 :0 ≤ x) (h2: x < 1/2 ): walsh (2*n) x = walsh (2*n +1) x:= by
+  rw[ walsh_even_left h1 h2, walsh_odd_left h1 h2]
+
+theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :walsh (2*n) x = - walsh (2*n +1) x:= by
+  rw[ walsh_even_right h1 h2, walsh_odd_right h1 h2]
+  simp
 
 /--
 Walsh functions are nonzero on `[0,1)`
@@ -144,6 +227,7 @@ Walsh functions are nonzero on `[0,1)`
 theorem walsh_in (n : ℕ) (x : ℝ) (h1 : 0 ≤ x) (h2: x < 1) : walsh n x ≠ 0 := by
   unfold walsh
   by_cases h : x<1/2
+
   · sorry
   · sorry
 /--
