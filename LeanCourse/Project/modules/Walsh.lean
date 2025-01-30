@@ -25,6 +25,17 @@ def walsh (n : ℕ) : ℝ → ℝ
     #check walsh.induct
 
 /--
+Walsh function is 0 outisde`[0,1)`.
+-/
+@[simp]
+theorem walsh_not_in {n : ℕ} (x : ℝ) (h : x < 0 ∨  1 ≤ x ) : walsh n x = 0 := by
+  unfold walsh
+  split_ifs with h1 h2
+  exact if_pos h
+  simp[h]
+  simp[h]
+
+/--
 Special case: Walsh function for n=0 is 1 on `[0,1)`.
 -/
 @[simp]
@@ -38,21 +49,18 @@ Special case: Walsh function for n=1.
 @[simp]
 theorem walsh_one (x : ℝ) : walsh 1 x = if 0 ≤ x ∧ x < 1/2 then 1 else if 1/2 ≤ x ∧ x < 1 then -1 else 0:= by
   split_ifs with h1 h2
-  unfold walsh
-  simp
-  rw[walsh_zero]
-  all_goals sorry
+  sorry
+  sorry
+  apply walsh_not_in
+  rw [not_and_or] at h1
+  push_neg at h1
+  rw [not_and_or] at h2
+  push_neg at h2
+  sorry
 
-/--
-Walsh function is 0 outisde`[0,1)`.
--/
-@[simp]
-theorem walsh_not_in {n : ℕ} (x : ℝ) (h : x < 0 ∨  1 ≤ x ) : walsh n x = 0 := by
-  unfold walsh
-  split_ifs with h1 h2
-  exact if_pos h
-  simp[h]
-  simp[h]
+
+
+
 
 /--
 Walsh functions are nonzero on `[0,1)`
