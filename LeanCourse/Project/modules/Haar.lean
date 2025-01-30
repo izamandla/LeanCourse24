@@ -159,16 +159,36 @@ theorem haarFunctionScaled_outside (k n : ℤ ) (x : ℝ)
   rw [haarFunction_outside _ h]
   simp
 
-
+--sth is wrong with the scale
 /--
-Scaled Haar function is 0 outside `[2^k n, 2^k (n+1))`.
+Scaled Haar function is 0 outside `[0,1)`.
 -/
 @[simp]
 theorem haarFunctionScaled_outside_zero_one {k n : ℤ } {x : ℝ}
-  (h1 : x < 0 ∨ x≥ 1)(hk : k ≤ 0 ) (hn : n ≥ 0)  : haarFunctionScaled k n x = 0 := by
+  (h1 : x < 0 ∨ x≥ 1)(hk : k ≤ 0 ) (hn : n ≥ 0 ∧ n ≤ (2^(-k) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
   apply haarFunctionScaled_outside
   simp
-  sorry
+  obtain h_l |h_r := h1
+  left
+  apply lt_of_lt_of_le (b := 0)
+  exact mul_neg_of_pos_of_neg (zpow_pos_of_pos two_pos k) (by exact h_l)
+  exact Int.cast_nonneg.mpr hn.1
+  right
+  have : 2 ^ k * x - ↑n ≥   2 ^ k * x - (2^k - 1) := by
+    apply sub_le_sub_left
+    sorry
+    --exact hn.2
+  have hnwm : 2 ^ k * x - (2 ^ k - 1) ≥ 1 := by
+    rw[sub_sub_eq_add_sub]
+    simp
+    rw[add_comm,← add_sub]
+    apply le_add_of_nonneg_right
+    simp
+    apply le_mul_of_one_le_right
+    exact (zpow_pos_of_pos two_pos k).le
+    exact h_r
+  exact Preorder.le_trans 1 (2 ^ k * x - (2 ^ k - 1)) (2 ^ k * x - ↑n) hnwm this
+
 
 
 theorem haarFunctionScaled_mul{k n n' : ℤ } (x :ℝ ) (h_diff : n ≠ n') : haarFunctionScaled k n x  * haarFunctionScaled k n' x = 0 := by
@@ -267,9 +287,10 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   apply Finset.sum_eq_zero
   intro l hl
   apply haarFunctionScaled_outside_zero_one
-  exact h
-  simp
-  simp
+  · exact h
+  · simp
+  · sorry
+
 
 /--
 Orthogonality of Rademacher functions.
