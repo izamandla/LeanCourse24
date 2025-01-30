@@ -110,8 +110,15 @@ theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
 /--
 The integral of squere of Haar function over `[0,1)` equals 1.
 -/
-theorem haar_integral_sqr : ∫ x in Set.Icc 0 1, (haarFunction x)^2 = 1 := by
-  sorry
+theorem haar_integral_sqr : ∫ x in Set.Ico 0 1, (haarFunction x) ^ 2 = 1 := by
+  have h : EqOn (fun x ↦ haarFunction x ^ 2) 1  (Ico 0 1):= by
+    intro x hx
+    simp_all
+  have h1 : MeasurableSet (Set.Ico (0 : ℝ ) 1) := by
+    simp
+  rw [MeasureTheory.setIntegral_congr h1 h]
+  simp
+
 
 /--
 Definition of caled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
@@ -124,7 +131,7 @@ def haarFunctionScaled (k n : ℕ) (x : ℝ) : ℝ :=
 Left half of scaled Haar function is equal to `2^(k / 2)`.
 -/
 @[simp]
-theorem haarFunctionScaled_left_half (k n : ℕ) (x : ℝ) (h : 0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1 / 2) :
+theorem haarFunctionScaled_left_half (k n : ℕ) (x : ℝ) (h : 0 ≤ 2 ^ (-k : ℝ ) * x - n ∧ 2 ^ (-k : ℝ ) * x - n < 1 / 2) :
   haarFunctionScaled k n x = 2 ^ ((k / 2) : ℝ) := by
   simp[haarFunctionScaled]
   rw [haarFunction_left_half _ h]
@@ -149,7 +156,9 @@ theorem haarFunctionScaled_orthogonal {k n n' : ℕ} (h_diff : n ≠ n') : ∫ x
   simp_rw [haarFunctionScaled, mul_assoc, mul_comm]
   ring_nf
   have h : ∀ x : ℝ,  haarFunction (x * 2 ^ k - ↑n) * haarFunction (x * 2 ^ k - ↑n') = 0 :=by
+
     sorry
+
   sorry
 
 /--
@@ -168,7 +177,7 @@ The square of the scaled Haar function is `2^k` within its support and `0` outsi
 -/
 @[simp]
 theorem haarFunctionScaled_sqr (k n : ℕ) (x : ℝ) :
-  (haarFunctionScaled k n x) ^ 2 = if 0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1 then 2 ^ k else 0 := by
+  (haarFunctionScaled k n x) ^ 2 = if  0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1  then 2 ^ k else 0 := by
   simp[haarFunctionScaled]
   rw[mul_pow, haar_sqr (2 ^ k * x - ↑n)]
   simp
@@ -197,12 +206,18 @@ theorem haarFunction_product (k n : ℕ) (x y : ℝ) : haarFunctionScaled k n x 
   sorry
 
 /--
-The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals 1.
+The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals `2^k`.
 -/
-theorem haarFunctionScaled_normalization (k n : ℕ) : ∫ x in Set.Icc (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = 1 := by
-  simp_rw [haarFunctionScaled, pow_two, mul_assoc]
-  ring_nf
-  sorry
+theorem haarFunctionScaled_normalization (k n : ℕ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = (2 ^(2*k)) := by
+  have h : EqOn (fun (x) ↦ haarFunctionScaled k n x ^ 2) (2 ^ k)  (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)):= by
+    intro x hx
+    simp_all
+  have h1 : MeasurableSet (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)) := by
+    simp
+  rw [MeasureTheory.setIntegral_congr h1 h]
+  simp
+  norm_num
+  ring
 
 
 /--
@@ -212,12 +227,16 @@ def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
   2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled k n t
 
 
+
+
+
 @[simp]
 theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   rademacherFunction k t = 0 := by
   unfold rademacherFunction
   /-have h1 (m : ℕ): haarFunctionScaled k m t = 0 := by
     apply haarFunctionScaled_outside-/
+
   sorry
 
 /--
