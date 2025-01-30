@@ -82,15 +82,29 @@ The integral of Haar function over `[0,1)` equals 0.
 
 --@[simp]
 theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
-  have h1 {μ}: IntervalIntegrable haarFunction μ 0 (1/2) := by
+  have hs : MeasurableSet (Set.Ico 0 (1/2 : ℝ )) := by
+    simp
+  have ht : MeasurableSet (Set.Ico (1/2 : ℝ ) 1) := by
+    simp
+  have h1: MeasureTheory.IntegrableOn haarFunction (Set.Ico 0 (1/2)) := by
     sorry
-  have h2 {μ}: IntervalIntegrable haarFunction μ (1/2) 1 := by
+  have h2: MeasureTheory.IntegrableOn haarFunction (Set.Ico (1/2) 1) := by
     sorry
-  rw[ ← MeasureTheory.integral_Icc_eq_integral_Ico, MeasureTheory.integral_Icc_eq_integral_Ioc', ← intervalIntegral.integral_of_le, ←  intervalIntegral.integral_add_adjacent_intervals h1 h2]
-  sorry
-  linarith
+  have h : Disjoint (Set.Ico (0 : ℝ ) (1/2)) (Set.Ico (1/2) 1) := by
+    simp
+  have h0 : Set.Ico (0 : ℝ ) 1 = Set.Ico 0 (1/2) ∪ Set.Ico (1/2) 1 := by
+    refine Eq.symm (Ico_union_Ico_eq_Ico ?h₁ ?h₂)
+    simp
+    linarith
+  rw[h0]
+  rw[MeasureTheory.integral_union h ht h1 h2 ]
+  have h_left : EqOn (haarFunction) 1  (Ico 0 (1/2)):= by
+    apply haarFunction_left_half
+  have h_right: EqOn (haarFunction) (-1)  (Ico (1/2) 1) := by
+    apply haarFunction_right_half
+  rw[MeasureTheory.setIntegral_congr hs h_left ,MeasureTheory.setIntegral_congr ht h_right]
   simp
-
+  norm_num
 
 
 /--
