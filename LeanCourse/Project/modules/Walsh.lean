@@ -294,6 +294,7 @@ def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
 Walsh functions are orthogonal.
 -/
 theorem walsh_orthogonality (n m : ℕ) (h : n ≠ m) : walshInnerProduct (walsh n) m = 0 := by
+  simp[walshInnerProduct]
   sorry
 
 /--
