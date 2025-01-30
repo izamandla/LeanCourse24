@@ -12,7 +12,7 @@ namespace Walsh
 def walsh (n : ℕ) : ℝ → ℝ
 | x =>
   if x <0 ∨  1 ≤  x then 0
-  else if x < 0.5 then
+  else if x < 1/2 then
     let m := n / 2
     if n = 0 then 1
     else walsh m (2 * x)
@@ -21,7 +21,7 @@ def walsh (n : ℕ) : ℝ → ℝ
     else
       let m := n / 2
       if  n % 2 = 0 then walsh m (2 * x - 1)
-      else walsh m (2 * x - 1)
+      else -walsh m (2 * x - 1)
     #check walsh.induct
 
 /--
@@ -47,41 +47,88 @@ theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
 Special case: Walsh function for n=1.
 -/
 @[simp]
-theorem walsh_one (x : ℝ) : walsh 1 x = if 0 ≤ x ∧ x < 1/2 then 1 else if 1/2 ≤ x ∧ x < 1 then -1 else 0:= by
-  split_ifs with h1 h2
-  sorry
-  sorry
-  apply walsh_not_in
-  rw [not_and_or] at h1
-  push_neg at h1
-  rw [not_and_or] at h2
-  push_neg at h2
-  sorry
+theorem walsh_one_left (x : ℝ) (h1 :0 ≤ x) (h2: x < 1/2 ) : walsh 1 x =  1:= by
+  simp[walsh]
+  split_ifs with h_1 h_2 h_3 h_4
+  · exfalso
+    obtain h_l|h_r := h_1
+    · linarith
+    · linarith
+  · exfalso
+    obtain h_l|h_r := h_3
+    · linarith
+    · linarith
+  · rfl
+  · exfalso
+    obtain h_l|h_r := h_4
+    · push_neg at h_2
+      simp_all
+      linarith
+    · linarith
+  · exfalso
+    push_neg at h_1 h_4
+    linarith
 
 
-
-
-
-/--
-Walsh functions are nonzero on `[0,1)`
--/
-theorem walsh_in (n : ℕ) (x : ℝ) (h : 0 ≤ x ∧ x < 1) : walsh n x ≠ 0 := by
-  unfold walsh
-  split_ifs with h1 h2
-  simp[h]
-  simp[h]
-  push_neg
-  sorry
-  simp[h]
-  push_neg
-  sorry
-
+@[simp]
+theorem walsh_one_right (x : ℝ) (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh 1 x = -1:= by
+  simp[walsh]
+  split_ifs with h_1 h_2 h_3 h_4
+  · exfalso
+    obtain h_l|h_r := h_1
+    · linarith
+    · linarith
+  · exfalso
+    obtain h_l|h_r := h_3
+    · linarith
+    · push_neg at h_1
+      simp_all
+      linarith
+  · exfalso
+    push_neg at h_1 h_3
+    linarith
+  · exfalso
+    obtain h_l|h_r := h_4
+    · push_neg at h_2 h_1
+      simp_all
+      rw[inv_le_iff_one_le_mul₀ (zero_lt_two)] at h_2
+      linarith
+    · linarith
+  · rfl
 
 
 /--
 Walsh function for n being even.
 -/
-theorem walsh_even {n : ℕ}{x : ℝ} : walsh (2*n) x = (if x < 0.5 then walsh n (2 * x) else walsh n (2 * x - 1)) := by
+theorem walsh_even_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2*n) x = walsh n (2 * x) := by
+  unfold walsh
+  --have h : ¬ ( x <0 ∨  1 ≤  x) := by sorry
+  /-simp--[h]
+  split_ifs with h_1 h_2 h_3 h_4
+  · exfalso
+    obtain h_l|h_r := h_1
+    · linarith
+    · linarith
+  · exfalso
+    obtain h_l|h_r := h_3
+    · linarith
+    · linarith
+  · rfl
+  · exfalso
+    obtain h_l|h_r := h_4
+    · push_neg at h_2
+      simp_all
+      linarith
+    · linarith
+  · exfalso
+    push_neg at h_1 h_4
+    linarith-/
+  sorry
+
+
+
+
+theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh (2*n) x = walsh n (2 * x - 1) := by
   sorry
 
 /--
@@ -90,6 +137,15 @@ Walsh function for n being odd.
 theorem walsh_odd {n : ℕ}{x : ℝ} : walsh (2*n +1 ) x = (if x < 0.5 then walsh n (2 * x) else -walsh n (2 * x - 1)) := by
   sorry
 
+
+/--
+Walsh functions are nonzero on `[0,1)`
+-/
+theorem walsh_in (n : ℕ) (x : ℝ) (h1 : 0 ≤ x) (h2: x < 1) : walsh n x ≠ 0 := by
+  unfold walsh
+  by_cases h : x<1/2
+  · sorry
+  · sorry
 /--
 Relation between Walsh funtion of `2n` and `2n+1`.
 -/
