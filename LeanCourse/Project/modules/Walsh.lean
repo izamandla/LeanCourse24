@@ -166,8 +166,14 @@ theorem walsh_odd_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2
   simp
   have h_odd0 : Odd (2 * n + 1) := by
     simp
+  have h_oddp : 2*((2 * n + 1  )/2) = 2*n := by
+    rw[Nat.odd_iff] at h_odd0
+    rw[Nat.two_mul_odd_div_two h_odd0]
+    simp
   have h_odd : (2 * n + 1) / 2 = n := by
-    sorry
+    rw[← Nat.mul_left_inj (a:=2), mul_comm, h_oddp]
+    linarith
+    simp
   split_ifs with h_1 h_2 h_3
   · exfalso
     obtain hl|hp := h_1
@@ -191,8 +197,14 @@ theorem walsh_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh 
   simp
   have h_odd0 : Odd (2 * n + 1) := by
     simp
+  have h_oddp : 2*((2 * n + 1  )/2) = 2*n := by
+    rw[Nat.odd_iff] at h_odd0
+    rw[Nat.two_mul_odd_div_two h_odd0]
+    simp
   have h_odd : (2 * n + 1) / 2 = n := by
-    sorry
+    rw[← Nat.mul_left_inj (a:=2), mul_comm, h_oddp]
+    linarith
+    simp
   split_ifs with h_1 h_2 h_3
   · exfalso
     obtain hl|hp := h_1
@@ -225,23 +237,15 @@ theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :wa
 Walsh functions are nonzero on `[0,1)`
 -/
 theorem walsh_in (n : ℕ) (x : ℝ) (h1 : 0 ≤ x) (h2: x < 1) : walsh n x ≠ 0 := by
-  unfold walsh
-  by_cases h : x<1/2
-
-  · sorry
-  · sorry
-/--
-Relation between Walsh funtion of `2n` and `2n+1`.
--/
-theorem walsh_even_oddd {n : ℕ}{x : ℝ} : if  0.5 ≤ x ∧ x < 1 then walsh (2*n) x = - walsh (2*n +1) x else walsh (2*n) x = walsh (2*n +1) x:= by
-  unfold walsh
-  simp
-  split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9
-  simp
-  exfalso
-  exact
-  sorry
-  all_goals sorry
+  by_cases h0 : n % 2 =0
+  --apply Int.even_or_odd' at h0
+  · by_cases h : x<1/2
+    · sorry
+    · sorry
+  push_neg at h0
+  · by_cases h : x<1/2
+    · sorry
+    · sorry
 
 
 
