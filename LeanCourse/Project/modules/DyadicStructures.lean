@@ -114,13 +114,20 @@ theorem dyadicInterval_split (k n : ℤ) :
   dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
   rw[scale_up, intervalform_dyadicInterval, intervalform_dyadicInterval]
   simp
-  ext x
-  constructor
-  intro h
-  obtain ⟨h_1, h_2⟩ := h
-  apply Set.Ico_subset_Ico_union_Ico
-  sorry
-  sorry
+  rw[Set.Ico_union_Ico_eq_Ico]
+  · unfold Set.Ico
+    ring_nf
+  · rw[mul_add]
+    simp
+    apply le_of_lt
+    apply zpow_pos_of_pos
+    simp
+  · rw[mul_add, mul_add, mul_add]
+    simp
+    apply le_of_lt
+    apply zpow_pos_of_pos
+    simp
+
 
 
 
@@ -184,42 +191,45 @@ theorem dyadicInterval_disjoint {k n n' : ℤ} (h : n ≠ n') : (dyadicInterval 
 Case when dyadic intervals with the scales `k<k'` - then they are disjoint or one is contained in the other.
 -/
 
+
 theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
   dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
   dyadicInterval k n ⊆ dyadicInterval k' n' ∨
   dyadicInterval k' n' ⊆ dyadicInterval k n := by
-  by_cases hn1 : (2^k' *n' : ℝ ) ≤ n *2^k
-  by_cases hn2 : ((n+1) * 2^k : ℝ ) ≤   2^k' * (n'+1)
-  right
-  left
-  intros x h1
-  rcases h1 with ⟨h_left, h_right⟩
-  apply mem_setOf.mpr ?_
-  have h_1 : 2 ^ k' * (n' : ℝ) ≤ x := by
-    apply le_trans hn1
-    rw [mul_comm]
-    exact h_left
-  have h_2 : x < 2 ^ k' * (↑n' + 1) := by
-    apply lt_of_lt_of_le h_right
-    rw [mul_comm]
-    exact hn2
-  apply And.intro
-  exact h_1
-  exact h_2
-  left
-  push_neg at hn2
-  ext x
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
-  sorry
-  push_neg at hn1
-  left
-  ext x
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-  rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
-  have h_10 :  (2 ^ k * (↑n+1) : ℝ ) ≤ ↑n' * 2 ^ k' := by
+  have hp : ∃ p : ℕ   , (2^k' : ℝ) = 2^k * 2^p := by
+
     sorry
-  linarith
+  obtain ⟨p, h_p⟩ := hp
+  by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
+  · rw[h_p] at h_1
+    have h_01 : n < 2 ^ p * ↑n' := by sorry
+    rw[← Int.add_one_le_iff] at h_01
+    have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * n' := by sorry
+    rw[← h_p] at h_02
+    left
+    ext x
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+    rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+    linarith
+  · push_neg at h_1
+    by_cases h_2 : (2^k *(n+1) : ℝ ) ≤   (2^k' * (n'+1) : ℝ)
+    · right
+      left
+      simp only [dyadicInterval, setOf_subset_setOf]
+      intro a ha
+      obtain ⟨ ha1,ha2⟩  := ha
+      constructor
+      linarith
+      linarith
+    · left
+      push_neg at h_2
+      have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * (n'+1) := by sorry
+      ext x
+      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+      rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+      rw[← h_p] at h_02
+      linarith
+
 
 
 /-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
