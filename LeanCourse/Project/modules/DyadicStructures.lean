@@ -189,6 +189,10 @@ theorem dyadicInterval_disjoint {k n n' : ℤ} (h : n ≠ n') : (dyadicInterval 
 
 /--
 Case when dyadic intervals with the scales `k<k'` - then they are disjoint or one is contained in the other.
+
+have : 0< k' - k := by
+      rw[Int.sub_pos]
+      exact h
 -/
 
 
@@ -196,15 +200,28 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
   dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
   dyadicInterval k n ⊆ dyadicInterval k' n' ∨
   dyadicInterval k' n' ⊆ dyadicInterval k n := by
-  have hp : ∃ p : ℕ   , (2^k' : ℝ) = 2^k * 2^p := by
-
+  have hp : ∃ p : ℕ, (2^k' : ℝ) = 2^k * 2^p := by
+    let a : ℤ  := k' - k
+    have ha : 0 ≤ a := Int.sub_nonneg_of_le (le_of_lt h)
+    let p := Int.toNat  a
+    use p
+    apply Int.ofNat at p
+    --rw[← zpow_add 2 k p ]
     sorry
   obtain ⟨p, h_p⟩ := hp
   by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
   · rw[h_p] at h_1
-    have h_01 : n < 2 ^ p * ↑n' := by sorry
+    have h_01 : n < 2 ^ p  * ↑n' := by
+      --apply Int.mul_le_mul_of_nonneg_left h_01 int.coe_nat_nonneg (nat.pow_pos 2 k)
+     /-have : 0< (2^k : ℝ ) := sorry
+      rw[← mul_lt_mul_left (a:= 2^k ) (b := n) (c:=2 ^ p * ↑n' ) ]
+      rw[← mul_assoc]-/
+      sorry
     rw[← Int.add_one_le_iff] at h_01
-    have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * n' := by sorry
+    have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * n' := by
+       --apply Int.mul_le_mul_of_nonneg_left h_01 (Int.natCast_nonneg (zpow_pos 2 k))
+
+      sorry
     rw[← h_p] at h_02
     left
     ext x
