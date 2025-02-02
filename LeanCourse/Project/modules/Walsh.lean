@@ -39,8 +39,8 @@ theorem walsh_not_in {n : ℕ} (x : ℝ) (h : x < 0 ∨  1 ≤ x ) : walsh n x =
 Special case: Walsh function for n=0 is 1 on `[0,1)`.
 -/
 @[simp]
-theorem walsh_zero (x : ℝ) (h :0 ≤ x ∧ x <1 ) : walsh 0 x = 1 := by
-  simp [walsh, h]
+theorem walsh_zero (x : ℝ) (h1 :0 ≤ x) (h2: x <1 ) : walsh 0 x = 1 := by
+  simp [walsh, h1,h2]
 
 
 /--
@@ -112,14 +112,12 @@ theorem walsh_even_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (
   · push_neg at h_1
     rw[h_3]
     rw[walsh_zero (2*x)]
-    constructor
     · linarith
     · linarith
   · rfl
   · push_neg at h_1 h_2
     rw[h_4]
     rw[walsh_zero (2*x)]
-    constructor
     · linarith
     · linarith
   · push_neg at h_1 h_2 h_4
@@ -140,7 +138,6 @@ theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : wals
   · push_neg at h_1
     rw[h_3]
     rw[walsh_zero (2*x-1)]
-    constructor
     · linarith
     · linarith
   · push_neg at h_1 h_3
@@ -150,7 +147,6 @@ theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : wals
   · push_neg at h_1 h_2
     rw[h_4]
     rw[walsh_zero (2*x-1)]
-    constructor
     · linarith
     · linarith
   · rfl
@@ -233,24 +229,112 @@ theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :wa
   rw[ walsh_even_right h1 h2, walsh_odd_right h1 h2]
   simp
 
+
+
 /--
 Walsh functions are nonzero on `[0,1)`
 -/
-theorem walsh_in (n : ℕ) (x : ℝ) (h1 : 0 ≤ x) (h2: x < 1) : walsh n x ≠ 0 := by
-  by_contra h
-  --obtain ⟨ k, hk⟩  := Nat.even_or_odd' n
-  --obtain hl|hr := hk
-  sorry
+theorem walsh_in (n : ℕ) (x : ℝ): ∀ x : ℝ, 0 ≤ x ∧  x < 1 → walsh n x ≠ 0 := by
+  induction' n using Nat.strong_induction_on with n ih
+  intro x hx
+  set k := n/2 with h_k
+  by_cases hzero :n = 0
+  · rw[hzero, walsh_zero]
+    · linarith
+    · let h1:= hx.1
+      exact h1
+    · let h2:= hx.2
+      exact h2
+  · by_cases hone : n = 1
+    · rw[hone]
+      by_cases h : x< 1/2
+      · rw[walsh_one_left]
+        · linarith
+        · linarith
+        · exact h
+      · push_neg at h
+        rw[walsh_one_right]
+        · linarith
+        · exact h
+        · linarith
+    · have hk2 : k < n := by
+        push_neg at hzero
+        rw[h_k]
+        apply Nat.div2Induction.proof_2
+        apply Nat.pos_of_ne_zero hzero
+      by_cases h0 : Odd n
+      · have hk1 : 2*k+1 = n := by
+          rw[h_k]
+          rw[mul_comm]
+          apply Nat.div_two_mul_two_add_one_of_odd
+          exact h0
+        rw[← hk1]
+        by_cases h : x<1/2
+        · rw[walsh_odd_left]
+          · set y:= 2* x with h_y
+            have hy : 0≤ y ∧ y<1 := by
+              rw[h_y]
+              constructor
+              · linarith
+              · linarith
+            exact ih k hk2 y hy
+          · let h1:= hx.1
+            exact h1
+          · exact h
+        · push_neg at h
+          rw[walsh_odd_right]
+          · set y:= 2* x -1 with h_y
+            have hy : 0≤ y ∧ y<1 := by
+              rw[h_y]
+              constructor
+              · linarith
+              · linarith
+            simp
+            exact ih k hk2 y hy
+          · exact h
+          · let h2:= hx.2
+            exact h2
+      · push_neg at h0
+        simp at h0
+        have hk1 : 2*k = n := by
+          rw[h_k]
+          rw[mul_comm]
+          apply Nat.div_two_mul_two_of_even
+          exact h0
+        rw[← hk1]
+        by_cases h : x<1/2
+        · rw[walsh_even_left]
+          · set y:= 2* x with h_y
+            have hy : 0≤ y ∧ y<1 := by
+              rw[h_y]
+              constructor
+              · linarith
+              · linarith
+            exact ih k hk2 y hy
+          · let h1:= hx.1
+            exact h1
+          · exact h
+        · push_neg at h
+          rw[walsh_even_right]
+          · set y:= 2* x -1 with h_y
+            have hy : 0≤ y ∧ y<1 := by
+              rw[h_y]
+              constructor
+              · linarith
+              · linarith
+            exact ih k hk2 y hy
+          · exact h
+          · let h2:= hx.2
+            exact h2
 
 
 
-
-/--
-Walsh function is zero outside the interval `[0, 1)`.
--/
-@[simp]
-theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : walsh n x = 0 := by
-  simp [walsh, h]
+  /--
+  Walsh function is zero outside the interval `[0, 1)`.
+  -/
+  @[simp]
+  theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : walsh n x = 0 := by
+    simp [walsh, h]
 
 
 /--0,`
