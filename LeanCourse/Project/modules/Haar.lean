@@ -366,7 +366,7 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   · exact h
   · simp
   · sorry
-
+  · sorry
 
 /--
 Orthogonality of Rademacher functions.
