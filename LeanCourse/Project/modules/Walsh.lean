@@ -328,27 +328,28 @@ theorem walsh_in (n : ℕ) (x : ℝ): ∀ x : ℝ, 0 ≤ x ∧  x < 1 → walsh 
             exact h2
 
 
-
-  /--
-  Walsh function is zero outside the interval `[0, 1)`.
+ /--
+Walsh function is zero outside the interval `[0, 1)`.
   -/
-  @[simp]
-  theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : walsh n x = 0 := by
-    simp [walsh, h]
+@[simp]
+theorem walsh_zero_outside_domain (n : ℕ) (x : ℝ) (h : x < 0 ∨ x ≥ 1) : walsh n x = 0 := by
+simp [walsh, h]
 
 
-/--0,`
+
+/--
 Multiplying Wlash functions of fixed `n` and different arguments.
 -/
-theorem mul_walsh1 {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n x)*(walsh n y ) =  0:= by
+theorem mul_walsh_outside {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n x)*(walsh n y ) =  0:= by
   rw[walsh_not_in]
   simp
   exact  h
 
-theorem mul_walsh1' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n y )*(walsh n x) =  0:= by
-  rw[mul_comm, mul_walsh1]
+theorem mul_walsh_outside' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n y )*(walsh n x) =  0:= by
+  rw[mul_comm, mul_walsh_outside]
   exact  h
----need first to be stated realtion bewteen walsh function and dyadic interval
+
+--TO NIE JEST PRAWDA!!
 theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
   sorry
 
@@ -473,6 +474,7 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   push_neg at hl
   rw [mem_binaryRepresentationSet_iff N x] at hr
   apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
+
   --apply Nat.testBit_implies_ge at hr
   sorry
   /- maybe useful in the future apply Nat.size_le -/

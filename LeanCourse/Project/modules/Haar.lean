@@ -124,70 +124,68 @@ theorem haar_integral_sqr : ∫ x in Set.Ico 0 1, (haarFunction x) ^ 2 = 1 := by
 Definition of caled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
 -/
 def haarFunctionScaled (k n : ℤ ) (x : ℝ) : ℝ :=
-  2^((k / 2) : ℝ) * haarFunction (2^k * x - n)
+  2^((-k / 2) : ℝ) * haarFunction (2^(-k) * x - n)
 
 
 /--
-Left half of scaled Haar function is equal to `2^(k / 2)`.
+Left half of scaled Haar function is equal to `2^(-k / 2)`.
 -/
 @[simp]
-theorem haarFunctionScaled_left_half (k n : ℤ ) (x : ℝ) (h : 0 ≤ 2 ^ k  * x - n ∧ 2 ^ k  * x - n < 1 / 2) :
-  haarFunctionScaled k n x = 2 ^ ((k / 2) : ℝ) := by
+theorem haarFunctionScaled_left_half (k n : ℤ ) (x : ℝ) (h1 : 0 ≤ 2 ^(-k)  * x - n )(h2: 2 ^ (-k)  * x - n < 1 / 2) :
+  haarFunctionScaled k n x = 2 ^ ((-k / 2) : ℝ) := by
   simp[haarFunctionScaled]
-  rw [haarFunction_left_half _ h]
-  simp
+  rw [haarFunction_left_half]
+  · simp
+  · rw[← zpow_neg]
+    constructor
+    · linarith
+    · linarith
+
 
 
 /--
-Right half of the scaled Haar function is equal to `-2^(k / 2)`.
+Right half of the scaled Haar function is equal to `-2^(-k / 2)`.
 -/
 @[simp]
-theorem haarFunctionScaled_right_half (k n : ℤ ) (x : ℝ) (h : 1 / 2 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1) :
-  haarFunctionScaled k n x = -2 ^ (k / 2 : ℝ) := by
-  unfold haarFunctionScaled
-  rw [haarFunction_right_half _ h]
-  simp
+theorem haarFunctionScaled_right_half (k n : ℤ ) (x : ℝ) (h1 : 1 / 2 ≤ 2^(-k) * x - n )(h2: 2 ^(- k) * x - n < 1) :
+  haarFunctionScaled k n x = -2 ^ (-k / 2 : ℝ) := by
+  simp[haarFunctionScaled]
+  rw [haarFunction_right_half]
+  · simp
+  · rw[← zpow_neg]
+    constructor
+    · linarith
+    · linarith
 
 /--
 Scaled Haar function is 0 outside `[2^k n, 2^k (n+1))`.
 -/
 @[simp]
 theorem haarFunctionScaled_outside (k n : ℤ ) (x : ℝ)
-  (h : 2 ^ k * x - n < 0 ∨ 2 ^ k * x - n ≥ 1) :
+  (h : 2 ^(- k) * x - n < 0 ∨ 2 ^ (-k) * x - n ≥ 1) :
   haarFunctionScaled k n x = 0 := by
   unfold haarFunctionScaled
   rw [haarFunction_outside _ h]
   simp
 
---sth is wrong with the scale
+
 /--
-Scaled Haar function is 0 outside `[0,1)`.
+Scaled Haar function of positive `k` and `n ∈ {0,...,2^k -1}` is 0 outside `[0,1)`.
 -/
 @[simp]
-theorem haarFunctionScaled_outside_zero_one {k n : ℤ } {x : ℝ}
-  (h1 : x < 0 ∨ x≥ 1)(hk : k ≤ 0 ) (hn : n ≥ 0 ∧ n ≤ (2^(-k) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
+theorem haarFunctionScaled_outside_zero_one {k n : ℕ  } {x : ℝ}
+  (h : x < 0 ∨ x≥ 1)(hn1 : n ≥ 0)(hn2: n ≤ (2^(-k : ℤ ) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
   apply haarFunctionScaled_outside
   simp
-  obtain h_l |h_r := h1
-  left
-  apply lt_of_lt_of_le (b := 0)
-  exact mul_neg_of_pos_of_neg (zpow_pos_of_pos two_pos k) (by exact h_l)
-  exact Int.cast_nonneg.mpr hn.1
-  right
-  have : 2 ^ k * x - ↑n ≥   2 ^ k * x - (2^k - 1) := by
-    apply sub_le_sub_left
-    sorry
-    --exact hn.2
-  have hnwm : 2 ^ k * x - (2 ^ k - 1) ≥ 1 := by
-    rw[sub_sub_eq_add_sub]
-    simp
-    rw[add_comm,← add_sub]
-    apply le_add_of_nonneg_right
-    simp
-    apply le_mul_of_one_le_right
-    exact (zpow_pos_of_pos two_pos k).le
-    exact h_r
-  exact Preorder.le_trans 1 (2 ^ k * x - (2 ^ k - 1)) (2 ^ k * x - ↑n) hnwm this
+  obtain h_l|h_r := h
+  · left
+    have : (2 ^ k)⁻¹* x <0 := by sorry
+    apply lt_of_lt_of_le this
+    linarith
+  · right
+    have h1 :  (2 ^ k)⁻¹ * (x-1) +1 ≤  (2 ^ k)⁻¹ * x - ↑n := by sorry
+    have h2 : 1 ≤   (2 ^ k)⁻¹ * (x-1) +1 := by sorry
+    exact Preorder.le_trans 1 ((2 ^ k)⁻¹ * (x - 1) + 1) ((2 ^ k)⁻¹ * x - ↑n) h2 h1
 
 
 
