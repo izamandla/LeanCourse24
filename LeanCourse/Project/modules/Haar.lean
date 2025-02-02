@@ -176,38 +176,63 @@ Scaled Haar function of positive `k` and `n ∈ {0,...,2^k -1}` is 0 outside `[0
 theorem haarFunctionScaled_outside_zero_one {k n : ℕ  } {x : ℝ}
   (h : x < 0 ∨ x≥ 1)(hn1 : n ≥ 0)(hn2: n ≤ (2^(-k : ℤ ) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
   apply haarFunctionScaled_outside
+  rw[zpow_neg ] at hn2
   simp
   obtain h_l|h_r := h
   · left
-    have : (2 ^ k)⁻¹* x <0 := by sorry
+    have : (2 ^ k)⁻¹* x <0 := by
+      rw[mul_comm]
+      apply mul_neg_of_neg_of_pos
+      · linarith
+      · simp
     apply lt_of_lt_of_le this
     linarith
   · right
-    have h1 :  (2 ^ k)⁻¹ * (x-1) +1 ≤  (2 ^ k)⁻¹ * x - ↑n := by sorry
-    have h2 : 1 ≤   (2 ^ k)⁻¹ * (x-1) +1 := by sorry
+    have h1 :  (2 ^ k)⁻¹ * (x-1) +1 ≤  (2 ^ k)⁻¹ * x - ↑n := by
+      rw[mul_sub]
+      simp
+      rw[sub_add, sub_le_sub_iff_left (a:=((2 ^ k)⁻¹ * x ))]
+      exact hn2
+    have h2 : 1 ≤   (2 ^ k)⁻¹ * (x-1) +1 := by
+      simp
+      linarith
     exact Preorder.le_trans 1 ((2 ^ k)⁻¹ * (x - 1) + 1) ((2 ^ k)⁻¹ * x - ↑n) h2 h1
 
 
 
 theorem haarFunctionScaled_mul{k n n' : ℤ } (x :ℝ ) (h_diff : n ≠ n') : haarFunctionScaled k n x  * haarFunctionScaled k n' x = 0 := by
-  by_cases h: 2 ^ k * x - n < 0 ∨ 2 ^ k * x - n ≥ 1
-  rw[haarFunctionScaled_outside k n]
-  linarith
-  exact h
-  rw[not_or] at h
-  push_neg at h
-  obtain ⟨h_1, h_2⟩ := h
-  /-have h1 : {0 ≤ 2 ^ k * x - ↑n ∧ 2 ^ k * x - ↑n < 1}  {0 ≤ 2 ^ k * x - ↑n' ∧ 2 ^ k * x - ↑n' < 1} = ∅ := by
-    simp-/
-  rw[haarFunctionScaled_outside k n']
-  simp
-  by_cases h1:  n≤  n'
-  right
-  sorry
-  left
-  push_neg at h1
-  sorry
-
+  by_cases h: 2 ^ (-k) * x - n < 0 ∨ 2 ^ (-k) * x - n ≥ 1
+  · rw[haarFunctionScaled_outside k n]
+    linarith
+    exact h
+  · rw[not_or] at h
+    push_neg at h
+    obtain ⟨h_1, h_2⟩ := h
+    simp only [zpow_neg] at h_2
+    apply lt_add_of_sub_left_lt at h_2
+    rw[haarFunctionScaled_outside k n']
+    · simp
+    · by_cases h1:  n<  n'
+      · left
+        rw[← Int.add_one_le_iff]at h1
+        simp
+        apply lt_of_lt_of_le h_2
+        norm_cast
+      · push_neg at h1
+        rw[le_iff_lt_or_eq] at h1
+        obtain h_11|h_12 := h1
+        · right
+          rw[← Int.add_one_le_iff]at h_11
+          simp at h_1
+          simp
+          rw[le_sub_iff_add_le, add_comm ]
+          norm_cast
+          --exact le_trans h_11 h_1
+          sorry
+        · left
+          exfalso
+          rw[eq_comm] at h_12
+          exact h_diff h_12
 
 /--
 Orthogonality of scaled Haar functions on intervals of the same length.
@@ -221,40 +246,93 @@ theorem haarFunctionScaled_orthogonal {k n n' : ℤ } (h_diff : n ≠ n') : ∫ 
 The square of the scaled Haar function is `2^k` within its support and `0` outside.
 -/
 @[simp]
-theorem haarFunctionScaled_sqr (k n : ℤ ) (x : ℝ) :
-  (haarFunctionScaled k n x) ^ 2 = if  0 ≤ 2 ^ k * x - n ∧ 2 ^ k * x - n < 1  then 2 ^ k else 0 := by
+theorem haarFunctionScaled_sqr (k n : ℤ ) (x : ℝ) (h1 : 0 ≤ 2 ^ (-k) * x - n) (h2 :2 ^ (-k) * x - n < 1) : (haarFunctionScaled k n x) ^ 2 = 2^(-k):= by
   simp[haarFunctionScaled]
-  rw[mul_pow, haar_sqr (2 ^ k * x - ↑n)]
+  rw[mul_pow, haar_sqr]
   simp
-  have : (2 ^ (↑k / 2:ℝ) : ℝ ) ^ 2 = 2^k := by
+  have h : (2 ^ (-k / 2:ℝ) : ℝ ) ^ 2 = 2^(-k) := by
     rw [← Real.rpow_mul_natCast]
+    · simp
+      rw[ ← zpow_neg]
+      norm_cast
+    · linarith
+  split_ifs with h_1
+  · obtain ⟨ h_11, h_12⟩ := h_1
+    rw[h]
     simp
-    linarith
-  rw[this]
+  · exfalso
+    rw[not_and_or] at h_1
+    obtain h_11|h_12 := h_1
+    · push_neg at h_11
+      rw[← zpow_neg] at h_11
+      linarith
+    · push_neg at h_12
+      rw[← zpow_neg] at h_12
+      linarith
 
-
- /-
-  theorem haarFunctionScaled_support (k n : ℕ) (x : ℝ) :
-  haarFunctionScaled k n x ≠ 0 ↔ n * 2^k ≤ x ∧ x < (n + 1) * 2^k := by
-  unfold haarFunctionScaled
-  rw [haarFunction_outside]
-  simp-/
 /--
 Product of scaled Haar functions on the same interval.
 -/
-theorem haarFunction_product (k n : ℤ ) (x y : ℝ) : haarFunctionScaled k n x  * haarFunctionScaled k n y  =
-  if   ((n*2^k ≤ x ∧ x < (n+ 1)*2^k) ∧ (n*2^k ≤ y ∧ y < (n+ 1)*2^k)) then
-    if ((n*2^k ≤ x ∧ x < (n+ 1/2)*2^k) ∧ (n*2^k ≤ y ∧ y < (n+ 1/2)*2^k)) then 1
-    else if (((n+ 1/2)*2^k ≤ x ∧ x < (n+ 1)*2^k) ∧ ((n+ 1/2)*2^k ≤ y ∧ y < (n+ 1/2)*2^k)) then 1
-    else -1
-  else 0 := by
-  sorry
+
+theorem haarFunction_product0 (k n : ℤ ) (x y : ℝ) (h:  2 ^ (-k) * x - ↑n < 0 ∨ 1≤  2 ^ (-k) * x - ↑n): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 0 := by
+  rw[haarFunctionScaled_outside]
+  · simp
+  · exact h
+
+theorem haarFunction_product0' (k n : ℤ ) (x y : ℝ) (h:  2 ^ (-k) * y - ↑n < 0 ∨ 1≤  2 ^ (-k) * y - ↑n): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 0 := by
+  rw[mul_comm]
+  apply haarFunction_product0
+  exact h
+
+theorem haarFunction_product1 (k n : ℤ ) (x y : ℝ) (h1: 0 ≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1/2) (h3: 0 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1/2): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 2^(-k) := by
+  rw[haarFunctionScaled_left_half ,haarFunctionScaled_left_half]
+  · rw[← pow_two]
+    rw [← Real.rpow_mul_natCast]
+    · simp
+      rw[ ← zpow_neg]
+      norm_cast
+    · linarith
+  · exact h3
+  · exact h4
+  · exact h1
+  · exact h2
+
+theorem haarFunction_product2 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1) (h3: 1/2 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 2^(-k) := by
+  rw[haarFunctionScaled_right_half ,haarFunctionScaled_right_half]
+  simp
+  · rw[← pow_two]
+    rw [←Real.rpow_mul_natCast]
+    · simp
+      rw[ ← zpow_neg]
+      norm_cast
+    · linarith
+  · exact h3
+  · exact h4
+  · exact h1
+  · exact h2
+
+
+theorem haarFunction_product3 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1) (h3: 0 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1/2): haarFunctionScaled k n x  * haarFunctionScaled k n y  = -2^(-k) := by
+  rw[haarFunctionScaled_right_half ,haarFunctionScaled_left_half]
+  simp
+  · rw[← pow_two]
+    rw [←Real.rpow_mul_natCast]
+    · simp
+      rw[← zpow_neg]
+      norm_cast
+    · linarith
+  · exact h3
+  · exact h4
+  · exact h1
+  · exact h2
+
+
 
 /--
 The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals `2^k`.
 -/
-theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = (2 ^(2*k)) := by
-  simp [haarFunctionScaled_sqr]
+theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = (2 ^(2*(-k))) := by
+  simp[haarFunctionScaled_sqr]
   have h : EqOn (fun (x) ↦ haarFunctionScaled k n x ^ 2) (2 ^ k)  (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)):= by
     intro x hx
     sorry
