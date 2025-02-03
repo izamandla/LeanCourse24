@@ -331,18 +331,42 @@ theorem haarFunction_product3 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x 
 /--
 The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals `2^k`.
 -/
-theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = (2 ^(2*(-k))) := by
-  simp[haarFunctionScaled_sqr]
-  have h : EqOn (fun (x) ↦ haarFunctionScaled k n x ^ 2) (2 ^ k)  (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)):= by
+theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = 1 := by
+  have h : EqOn (fun (x) ↦ haarFunctionScaled k n x ^ 2) (2 ^ (-k))  (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)):= by
     intro x hx
-    sorry
+    simp
+    simp at hx
+    obtain ⟨hx1,hx2 ⟩ := hx
+    rw[haarFunctionScaled_sqr]
+    · simp
+    · norm_num
+      rw[mul_comm, le_mul_inv_iff₀]
+      · linarith
+      · apply zpow_pos_of_pos
+        simp
+    · norm_num
+      rw[sub_lt_iff_lt_add', mul_comm, ← lt_mul_inv_iff₀ ]
+      · simp
+        linarith
+      · simp
+        apply zpow_pos_of_pos
+        simp
   have h1 : MeasurableSet (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)) := by
     simp
-  /-rw [MeasureTheory.setIntegral_congr h1 h]
+  rw [MeasureTheory.setIntegral_congr h1 h]
   simp
-  norm_num
-  ring-/
-  sorry
+  have : ((2 ^ k : ℝ ) * (↑n + 1) - 2 ^ k * ↑n) = 2^k := by
+    rw[mul_add]
+    simp
+  rw[this]
+  rw[ENNReal.toReal_ofReal]
+  · rw[← zpow_neg, ← zpow_add₀]
+    simp
+    simp
+  · apply le_of_lt
+    apply zpow_pos_of_pos
+    simp
+
 
 
 /--
@@ -362,11 +386,13 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   apply mul_eq_zero_of_right
   apply Finset.sum_eq_zero
   intro l hl
-  apply haarFunctionScaled_outside_zero_one
+
+ /-apply haarFunctionScaled_outside_zero_one
   · exact h
   · simp
   · sorry
-  · sorry
+  · sorry-/
+  sorry
 
 /--
 Orthogonality of Rademacher functions.
