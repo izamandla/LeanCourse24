@@ -255,11 +255,13 @@ theorem dyadic_intervals_relation' {k k' n n' : ℤ} (h : k < k') :
   dyadicInterval k' n' ⊆ dyadicInterval k n := by
   apply Int.le.dest at h
   obtain ⟨p, h_p⟩ := h
+  ---rw[Nat.cast_id p] at h_p czemu to nie działa??
   set p':= 1+p with h_p'
-  have hp' : (2^k' : ℝ) = 2^k * 2^p':= by
-    --simp
-    --rw[← zpow_add₀ two_ne_zero k (p'), h_p']
+  have hp' : (2^k' : ℝ) = 2^k * 2^↑p':= by
+    rw[h_p']
+    --rw[add_comm, ← eq_sub_iff_add_eq, Nat.cast_id p] at h_p
 
+    --rw[← zpow_add₀ two_ne_zero k (1+p)]
 
     --rw[← zpow_add 2 k p ]
     sorry
