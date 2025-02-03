@@ -221,7 +221,6 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
     rw[← Int.add_one_le_iff] at h_01
     have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * n' := by
        --apply Int.mul_le_mul_of_nonneg_left h_01 (Int.natCast_nonneg (zpow_pos 2 k))
-
       sorry
     rw[← h_p] at h_02
     left
@@ -246,6 +245,59 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
       simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
       rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
       rw[← h_p] at h_02
+      linarith
+
+
+
+theorem dyadic_intervals_relation' {k k' n n' : ℤ} (h : k < k') :
+  dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
+  dyadicInterval k n ⊆ dyadicInterval k' n' ∨
+  dyadicInterval k' n' ⊆ dyadicInterval k n := by
+  apply Int.le.dest at h
+  obtain ⟨p, h_p⟩ := h
+  set p':= 1+p with h_p'
+  have hp' : (2^k' : ℝ) = 2^k * 2^p':= by
+    --simp
+    --rw[← zpow_add₀ two_ne_zero k (p'), h_p']
+
+
+    --rw[← zpow_add 2 k p ]
+    sorry
+  by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
+  · rw[hp'] at h_1
+    have h_01 : n < 2 ^ p'  * ↑n' := by
+      --apply Int.mul_le_mul_of_nonneg_left h_01 int.coe_nat_nonneg (nat.pow_pos 2 k)
+     /-have : 0< (2^k : ℝ ) := sorry
+      rw[← mul_lt_mul_left (a:= 2^k ) (b := n) (c:=2 ^ p * ↑n' ) ]
+      rw[← mul_assoc]-/
+      sorry
+    rw[← Int.add_one_le_iff] at h_01
+    have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p' * n' := by
+       --apply Int.mul_le_mul_of_nonneg_left h_01 (Int.natCast_nonneg (zpow_pos 2 k))
+      sorry
+    rw[← hp'] at h_02
+    left
+    ext x
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+    rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+    linarith
+  · push_neg at h_1
+    by_cases h_2 : (2^k *(n+1) : ℝ ) ≤   (2^k' * (n'+1) : ℝ)
+    · right
+      left
+      simp only [dyadicInterval, setOf_subset_setOf]
+      intro a ha
+      obtain ⟨ ha1,ha2⟩  := ha
+      constructor
+      linarith
+      linarith
+    · left
+      push_neg at h_2
+      have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p' * (n'+1) := by sorry
+      ext x
+      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+      rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
+      rw[← hp'] at h_02
       linarith
 
 
