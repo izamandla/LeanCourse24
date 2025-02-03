@@ -208,6 +208,7 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
     apply Int.ofNat at p
     --rw[← zpow_add 2 k p ]
     sorry
+  /-Int.le.dest  -> k'= k+n-/
   obtain ⟨p, h_p⟩ := hp
   by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
   · rw[h_p] at h_1

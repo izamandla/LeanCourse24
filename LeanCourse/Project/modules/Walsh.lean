@@ -229,7 +229,7 @@ theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :wa
   rw[ walsh_even_right h1 h2, walsh_odd_right h1 h2]
   simp
 
-
+--Nat.Bit
 
 /--
 Walsh functions are nonzero on `[0,1)`
@@ -474,12 +474,11 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   push_neg at hl
   rw [mem_binaryRepresentationSet_iff N x] at hr
   apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
-
-  --apply Nat.testBit_implies_ge at hr
+  apply Nat.testBit_implies_ge at hr
   sorry
   /- maybe useful in the future apply Nat.size_le -/
   sorry
-
+/-Nat.digit-/
 
 
 end Walsh

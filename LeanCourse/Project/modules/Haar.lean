@@ -1,5 +1,5 @@
 import Mathlib
-open Function Set Classical
+open Function Set Classical MeasureTheory
 noncomputable section
 
 /- ## Haar and Rademacher functions -/
@@ -86,7 +86,15 @@ theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
     simp
   have ht : MeasurableSet (Set.Ico (1/2 : ℝ ) 1) := by
     simp
+  have h_left : EqOn (haarFunction) 1  (Ico 0 (1/2)):= by
+    apply haarFunction_left_half
+  have h_right: EqOn (haarFunction) (-1)  (Ico (1/2) 1) := by
+    apply haarFunction_right_half
   have h1: MeasureTheory.IntegrableOn haarFunction (Set.Ico 0 (1/2)) := by
+    apply MeasureTheory.IntegrableOn.congr_fun
+    sorry
+    sorry
+    sorry
     sorry
   have h2: MeasureTheory.IntegrableOn haarFunction (Set.Ico (1/2) 1) := by
     sorry
@@ -98,10 +106,6 @@ theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
     linarith
   rw[h0]
   rw[MeasureTheory.integral_union h ht h1 h2 ]
-  have h_left : EqOn (haarFunction) 1  (Ico 0 (1/2)):= by
-    apply haarFunction_left_half
-  have h_right: EqOn (haarFunction) (-1)  (Ico (1/2) 1) := by
-    apply haarFunction_right_half
   rw[MeasureTheory.setIntegral_congr hs h_left ,MeasureTheory.setIntegral_congr ht h_right]
   simp
   norm_num
@@ -227,8 +231,8 @@ theorem haarFunctionScaled_mul{k n n' : ℤ } (x :ℝ ) (h_diff : n ≠ n') : ha
           simp
           rw[le_sub_iff_add_le, add_comm ]
           norm_cast
-          --exact le_trans h_11 h_1
-          sorry
+          refine le_trans ?_ h_1
+          norm_cast
         · left
           exfalso
           rw[eq_comm] at h_12
