@@ -459,6 +459,15 @@ theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   rw [ge_iff_le, ← m.lt_size] at h
   linarith
 
+theorem binaryRepresentationSet_not_zero (n : ℕ ) (h : n >0 )  : binaryRepresentationSet n ≠  ∅ := by
+  rw[gt_iff_lt, ← Nat.ne_zero_iff_zero_lt] at h
+  apply Nat.ne_zero_implies_bit_true at h
+  obtain ⟨ i, h_i ⟩ := h
+  rw[←  mem_binaryRepresentationSet_iff ] at h_i
+  simp
+  intro h
+  rw [h] at h_i
+  exact Finset.not_mem_empty i h_i
 
 /--
 Removing an element from the binary representation set.
@@ -480,5 +489,53 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   sorry
 /-Nat.digit-/
 
+
+theorem remove_bit1 (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
+  rw [mem_binaryRepresentationSet_iff ] at h
+  ext x
+  simp
+  constructor
+  intro h1
+  rcases h1 with ⟨hr, hl⟩
+  push_neg at hl
+  rw [mem_binaryRepresentationSet_iff N x] at hr
+  apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
+  apply Nat.testBit_implies_ge at hr
+  sorry
+  /- maybe useful in the future apply Nat.size_le -/
+  sorry
+
+
+theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
+ /- apply Nat.eq_of_testBit_eq
+  --simp[binaryRepresentationSet]
+  have h1 (k m : ℕ ) : (2 ^ k).testBit m = True ↔ m= k:= by sorry
+ -- have h1 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = ∑ k ∈ binaryRepresentationSet n,((2 ^ k).testBit i) := sorry
+  intro i
+  have h2 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = True ↔ i ∈ binaryRepresentationSet n := sorry
+  by_cases h : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i
+  · rw[h]
+    sorry
+  · sorry-/
+  induction' n using Nat.strong_induction_on with n ih
+
+  sorry
+
+
+
+
+
+theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j > k, j ∉ binaryRepresentationSet n := by
+  /-have h0 : (binaryRepresentationSet n).Nonempty := by
+    apply binaryRepresentationSet_not_zero at h
+    exact Finset.nonempty_iff_ne_empty.mpr h-/
+  have h1 :  ∃ a, Finset.max (binaryRepresentationSet n )= a := by
+    exact exists_eq'
+  obtain ⟨ a , ha ⟩ := h1
+  have h2 (k :ℕ ): ∀ j > k, j ∉ binaryRepresentationSet n ↔ ∀ j ∈  binaryRepresentationSet n, j≤ k := by
+    sorry
+  sorry
+
+theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by sorry
 
 end Walsh
