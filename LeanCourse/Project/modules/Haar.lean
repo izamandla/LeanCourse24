@@ -92,6 +92,7 @@ theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
     apply haarFunction_right_half
   have h1: MeasureTheory.IntegrableOn haarFunction (Set.Ico 0 (1/2)) := by
     apply MeasureTheory.IntegrableOn.congr_fun
+
     sorry
     sorry
     sorry
@@ -377,7 +378,7 @@ theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n 
 Definition of the Rademacher function `r_n(x)`.
 -/
 def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
-  2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled (-(k : ℤ)) n t
+  2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled k n t
 
 
 
@@ -390,13 +391,12 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   apply mul_eq_zero_of_right
   apply Finset.sum_eq_zero
   intro l hl
+  have h1 : 0 ≤ l := by
+    simp
+  have h2 : l ≤ (2^(k : ℤ ) : ℝ  )-1 := by sorry
+  --apply haarFunctionScaled_outside_zero_one h h1 h2
+  --ewidentnie coś nie działa
 
- /-apply haarFunctionScaled_outside_zero_one
-  · exact h
-  · simp
-  · sorry
-  · sorry-/
-  sorry
 
 /--
 Orthogonality of Rademacher functions.

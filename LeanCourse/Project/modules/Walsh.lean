@@ -373,14 +373,36 @@ theorem sqr_walsh {n : ℕ} (x : ℝ) (h1 : 0 ≤ x)(h2: x < 1) : (walsh n x)*(w
 Walsh inner product definition.
 -/
 def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
-  ∫ x in Set.Icc 0 1, f x * walsh n x
+  ∫ x in Set.Ico 0 1, f x * walsh n x
 
 /--
 Walsh functions are orthogonal.
 -/
-theorem walsh_orthogonality (n m : ℕ) (h : n ≠ m) : walshInnerProduct (walsh n) m = 0 := by
+
+
+theorem walshInnermul {n m : ℕ}  : walshInnerProduct (walsh n) m = walshInnerProduct (walsh m) n := by
+  simp[walshInnerProduct]
+  have h1 : EqOn ((walsh n)*(walsh m)) ((walsh m)*(walsh n))  (Set.Ico 0 (1:ℝ)):= by
+    rw[mul_comm]
+    exact fun ⦃x⦄ ↦ congrFun rfl
+  have h2 : MeasurableSet (Set.Ico 0 (1:ℝ)) := by
+    simp
+  --rw[MeasureTheory.setIntegral_congr h2 h1]
+  sorry
+
+theorem walsh_orthogonalityhelp {n m : ℕ} (h : n < m) : walshInnerProduct (walsh n) m = 0 := by
   simp[walshInnerProduct]
   sorry
+
+
+theorem walsh_orthogonality {n m : ℕ} (h : n ≠ m) : walshInnerProduct (walsh n) m = 0 := by
+  by_cases h1: n<m
+  · apply walsh_orthogonalityhelp h1
+  · push_neg at h1
+    have h2 : m< n := by
+      exact Nat.lt_of_le_of_ne h1 (id (Ne.symm h))
+    rw[walshInnermul]
+    apply walsh_orthogonalityhelp h2
 
 /--
 Walsh functions have norm 1.
@@ -395,8 +417,8 @@ Multiplication Walsh inner product by scalar.
 -/
 theorem walshInnerProduct_smul (c : ℝ) (f : ℝ → ℝ) (n : ℕ) :
   walshInnerProduct (λ x => c * f x) n = c * walshInnerProduct f n := by
-  unfold walshInnerProduct
-  simp
+  simp[walshInnerProduct]
+  --rw[MeasureTheory.lintegral_const_mul]
   sorry
 
 /--
@@ -415,9 +437,9 @@ theorem walshInnerProduct_add (f g : ℝ → ℝ) (n : ℕ) :
   unfold walshInnerProduct
   simp
   rw[← MeasureTheory.integral_add]
-  simp[add_mul]
-  sorry
-  sorry
+  · simp[add_mul]
+  · sorry
+  · sorry
 
 
 /--
