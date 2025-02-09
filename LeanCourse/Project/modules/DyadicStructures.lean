@@ -189,94 +189,33 @@ theorem dyadicInterval_disjoint {k n n' : ℤ} (h : n ≠ n') : (dyadicInterval 
 
 /--
 Case when dyadic intervals with the scales `k<k'` - then they are disjoint or one is contained in the other.
-
-have : 0< k' - k := by
-      rw[Int.sub_pos]
-      exact h
 -/
-
 
 theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
   dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
   dyadicInterval k n ⊆ dyadicInterval k' n' ∨
   dyadicInterval k' n' ⊆ dyadicInterval k n := by
-  have hp : ∃ p : ℕ, (2^k' : ℝ) = 2^k * 2^p := by
-    let a : ℤ  := k' - k
-    have ha : 0 ≤ a := Int.sub_nonneg_of_le (le_of_lt h)
-    let p := Int.toNat  a
-    use p
-    apply Int.ofNat at p
-    --rw[← zpow_add 2 k p ]
-    sorry
-  /-Int.le.dest  -> k'= k+n-/
-  obtain ⟨p, h_p⟩ := hp
-  by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
-  · rw[h_p] at h_1
-    have h_01 : n < 2 ^ p  * ↑n' := by
-      --apply Int.mul_le_mul_of_nonneg_left h_01 int.coe_nat_nonneg (nat.pow_pos 2 k)
-     /-have : 0< (2^k : ℝ ) := sorry
-      rw[← mul_lt_mul_left (a:= 2^k ) (b := n) (c:=2 ^ p * ↑n' ) ]
-      rw[← mul_assoc]-/
-      sorry
-    rw[← Int.add_one_le_iff] at h_01
-    have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * n' := by
-       --apply Int.mul_le_mul_of_nonneg_left h_01 (Int.natCast_nonneg (zpow_pos 2 k))
-      sorry
-    rw[← h_p] at h_02
-    left
-    ext x
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-    rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
-    linarith
-  · push_neg at h_1
-    by_cases h_2 : (2^k *(n+1) : ℝ ) ≤   (2^k' * (n'+1) : ℝ)
-    · right
-      left
-      simp only [dyadicInterval, setOf_subset_setOf]
-      intro a ha
-      obtain ⟨ ha1,ha2⟩  := ha
-      constructor
-      linarith
-      linarith
-    · left
-      push_neg at h_2
-      have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p * (n'+1) := by sorry
-      ext x
-      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-      rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
-      rw[← h_p] at h_02
-      linarith
-
-
-
-theorem dyadic_intervals_relation' {k k' n n' : ℤ} (h : k < k') :
-  dyadicInterval k n ∩ dyadicInterval k' n' = ∅ ∨
-  dyadicInterval k n ⊆ dyadicInterval k' n' ∨
-  dyadicInterval k' n' ⊆ dyadicInterval k n := by
   apply Int.le.dest at h
   obtain ⟨p, h_p⟩ := h
-  ---rw[Nat.cast_id p] at h_p czemu to nie działa??
   set p':= 1+p with h_p'
   have hp' : (2^k' : ℝ) = 2^k * 2^↑p':= by
-    rw[h_p']
-    --rw[add_comm, ← eq_sub_iff_add_eq, Nat.cast_id p] at h_p
-
-    --rw[← zpow_add₀ two_ne_zero k (1+p)]
-
-    --rw[← zpow_add 2 k p ]
-    sorry
+    rw[h_p', ← h_p]
+    rw [add_assoc, zpow_add₀ two_ne_zero]
+    norm_cast
   by_cases h_1 : (2^k *n : ℝ ) < (2^k' * n' : ℝ)
   · rw[hp'] at h_1
-    have h_01 : n < 2 ^ p'  * ↑n' := by
-      --apply Int.mul_le_mul_of_nonneg_left h_01 int.coe_nat_nonneg (nat.pow_pos 2 k)
-     /-have : 0< (2^k : ℝ ) := sorry
-      rw[← mul_lt_mul_left (a:= 2^k ) (b := n) (c:=2 ^ p * ↑n' ) ]
-      rw[← mul_assoc]-/
-      sorry
+    have h_01 : n < (2 : ℕ) ^ p'  * ↑n' := by
+      rw [mul_assoc, mul_lt_mul_left (zpow_pos_of_pos zero_lt_two k)] at h_1
+      norm_cast at h_1
+      rw [Int.natCast_pow] at h_1
+      exact h_1
     rw[← Int.add_one_le_iff] at h_01
     have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p' * n' := by
-       --apply Int.mul_le_mul_of_nonneg_left h_01 (Int.natCast_nonneg (zpow_pos 2 k))
-      sorry
+      rw[mul_assoc]
+      refine mul_le_mul_of_nonneg_left (α := ℝ) ?_ (zpow_pos_of_pos zero_lt_two k).le
+      norm_cast
+      rw [Int.natCast_pow]
+      exact h_01
     rw[← hp'] at h_02
     left
     ext x
@@ -295,11 +234,30 @@ theorem dyadic_intervals_relation' {k k' n n' : ℤ} (h : k < k') :
       linarith
     · left
       push_neg at h_2
-      have h_02 : (2^k : ℝ ) * (n + 1) ≤ 2^ k * 2 ^ p' * (n'+1) := by sorry
+      have hn1: 2^p' * n' ≤  n := by
+        rw[hp'] at h_1
+        rw [mul_assoc, mul_le_mul_left (zpow_pos_of_pos zero_lt_two k)] at h_1
+        norm_cast at h_1
+        rw [Int.natCast_pow] at h_1
+        exact h_1
+      have hn2 : 2^p' * (n' + 1) < n+1 := by
+        rw[hp'] at h_2
+        rw [mul_assoc, mul_lt_mul_left (zpow_pos_of_pos zero_lt_two k)] at h_2
+        norm_cast at h_2
+        rw [Int.natCast_pow] at h_2
+        exact h_2
+      have hmain : (2^p' : ℕ ) *(n'+1) ≤  n := by
+        rw[← Int.lt_add_one_iff]
+        norm_cast
+        rw [Int.natCast_pow]
+        exact hn2
       ext x
       simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
       rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩
-      rw[← hp'] at h_02
+      have : (2^k' : ℝ  ) *(n'+1) ≤  2^k * n := by
+        rw[hp']
+        rw [mul_assoc, mul_le_mul_left (a := (2 ^ k : ℝ)) (zpow_pos_of_pos zero_lt_two k)]
+        norm_cast
       linarith
 
 
