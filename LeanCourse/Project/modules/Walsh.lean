@@ -349,7 +349,9 @@ theorem mul_walsh_outside' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (wa
   rw[mul_comm, mul_walsh_outside]
   exact  h
 
---TO NIE JEST PRAWDA!!
+/--
+General multiplying Walsh functions.
+-/
 theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
   sorry
 
@@ -392,6 +394,7 @@ theorem walshInnermul {n m : ℕ}  : walshInnerProduct (walsh n) m = walshInnerP
 
 theorem walsh_orthogonalityhelp {n m : ℕ} (h : n < m) : walshInnerProduct (walsh n) m = 0 := by
   simp[walshInnerProduct]
+
   sorry
 
 
@@ -435,7 +438,12 @@ theorem walshInnerProduct_smul (c : ℝ) (f : ℝ → ℝ) (n : ℕ) :
 Multiplication Walsh inner product by function.
 -/
 theorem mul_walshInnerProduct (f g : ℝ → ℝ) (n : ℕ) (x : ℝ ) :
-  walshInnerProduct (λ y ↦ g x * f y) n = ∫ y in Set.Icc 0 1, g x * f y * walsh n y := by
+  walshInnerProduct (λ y ↦ g x * f y) n = ∫ y in Set.Ico 0 1, g x * f y * walsh n y := by
+  unfold walshInnerProduct
+  simp
+
+theorem add_walshInnerProduct (f g : ℝ → ℝ) (n : ℕ) (x : ℝ ) :
+  walshInnerProduct (λ y ↦ g y + f y) n = ∫ y in Set.Ico 0 1, (g y + f y) * walsh n y := by
   unfold walshInnerProduct
   simp
 
@@ -490,9 +498,8 @@ theorem binaryRepresentationSet_not_zero (n : ℕ ) (h : n >0 )  : binaryReprese
   exact Finset.not_mem_empty i h_i
 
 
-theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
-  induction' n using Nat.strong_induction_on with n ih
-  sorry
+
+
 /--
 Removing an element from the binary representation set.
 -/
@@ -504,36 +511,17 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   constructor
   intro h1
   rcases h1 with ⟨hr, hl⟩
-  push_neg at hl
-  rw [mem_binaryRepresentationSet_iff N x] at hr
-  apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
-  apply Nat.testBit_implies_ge at hr
+  · push_neg at hl
+    rw [mem_binaryRepresentationSet_iff N x] at hr
+    apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
+    apply Nat.testBit_implies_ge at hr
+    sorry
+  · sorry
 
+
+theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
+  induction' n using Nat.strong_induction_on with n ih
   sorry
-  /- maybe useful in the future apply Nat.size_le -/
-  sorry
-/-Nat.digit-/
-
-
-theorem remove_bit1 (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRepresentationSet N \ {M} = binaryRepresentationSet (N - 2^M) := by
-  rw [mem_binaryRepresentationSet_iff ] at h
-  ext x
-  simp
-  constructor
-  intro h1
-  rcases h1 with ⟨hr, hl⟩
-  push_neg at hl
-  rw [mem_binaryRepresentationSet_iff N x] at hr
-  apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
-  apply Nat.testBit_implies_ge at hr
-  sorry
-  /- maybe useful in the future apply Nat.size_le -/
-  sorry
-
-
-
-
-
 
 
 
@@ -544,13 +532,25 @@ theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRe
   have h1 :  ∃ (a : ℕ), Finset.max (binaryRepresentationSet n )= a := by
     apply Finset.max_of_nonempty h0
   obtain ⟨ a , ha ⟩ := h1
-  have h2 (k :ℕ ): ∀ j > k, j ∉ binaryRepresentationSet n ↔ ∀ j ∈  binaryRepresentationSet n, j≤ k := by
-    sorry
-  have h : a ∈ binaryRepresentationSet n := sorry
+  have h : a ∈ binaryRepresentationSet n := by
+    exact Finset.mem_of_max ha
   use a, h
+  simp
+  intro j hj
+  exact Finset.not_mem_of_max_lt hj ha
 
-  sorry
+theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by
+  have h0 : (binaryRepresentationSet n).Nonempty := by
+    apply binaryRepresentationSet_not_zero at h
+    exact Finset.nonempty_iff_ne_empty.mpr h
+  have h1 :  ∃ (a : ℕ), Finset.min (binaryRepresentationSet n )= a := by
+    apply Finset.min_of_nonempty h0
+  obtain ⟨ a , ha ⟩ := h1
+  have h : a ∈ binaryRepresentationSet n := by
+    exact Finset.mem_of_min ha
+  use a, h
+  intro j hj
+  exact Finset.not_mem_of_lt_min hj ha
 
-theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by sorry
 
 end Walsh
