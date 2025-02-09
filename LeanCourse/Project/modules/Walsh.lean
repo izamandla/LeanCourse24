@@ -387,8 +387,8 @@ theorem walshInnermul {n m : ℕ}  : walshInnerProduct (walsh n) m = walshInnerP
     exact fun ⦃x⦄ ↦ congrFun rfl
   have h2 : MeasurableSet (Set.Ico 0 (1:ℝ)) := by
     simp
-  --rw[MeasureTheory.setIntegral_congr h2 h1]
-  sorry
+  change ∫ (x : ℝ) in Ico 0 1, (walsh n * walsh m) x = ∫ (x : ℝ) in Ico 0 1, (walsh m * walsh n) x
+  rw[MeasureTheory.setIntegral_congr h2 h1]
 
 theorem walsh_orthogonalityhelp {n m : ℕ} (h : n < m) : walshInnerProduct (walsh n) m = 0 := by
   simp[walshInnerProduct]
@@ -410,7 +410,17 @@ Walsh functions have norm 1.
 theorem walsh_norm (n : ℕ) :
   walshInnerProduct (walsh n) n = 1 := by
   unfold walshInnerProduct
-  sorry
+  have hs : MeasurableSet (Set.Ico 0 (1 : ℝ )) := by
+    simp
+  have h1 : EqOn ((walsh n)*(walsh n)) 1  (Set.Ico 0 (1:ℝ)):= by
+    intro x hx
+    rw [Pi.mul_apply, Pi.one_apply, sqr_walsh ]
+    · simp_all
+    · simp_all
+  change ∫ (x : ℝ) in Ico 0 1, (walsh n * walsh n) x = 1
+  rw[MeasureTheory.setIntegral_congr hs h1]
+  simp
+
 
 /--
 Multiplication Walsh inner product by scalar.
@@ -418,8 +428,8 @@ Multiplication Walsh inner product by scalar.
 theorem walshInnerProduct_smul (c : ℝ) (f : ℝ → ℝ) (n : ℕ) :
   walshInnerProduct (λ x => c * f x) n = c * walshInnerProduct f n := by
   simp[walshInnerProduct]
-  --rw[MeasureTheory.lintegral_const_mul]
-  sorry
+  simp_rw[← MeasureTheory.integral_mul_left, mul_assoc]
+
 
 /--
 Multiplication Walsh inner product by function.
@@ -428,18 +438,6 @@ theorem mul_walshInnerProduct (f g : ℝ → ℝ) (n : ℕ) (x : ℝ ) :
   walshInnerProduct (λ y ↦ g x * f y) n = ∫ y in Set.Icc 0 1, g x * f y * walsh n y := by
   unfold walshInnerProduct
   simp
-
-/--
-Walsh inner product of sum of functions.
--/
-theorem walshInnerProduct_add (f g : ℝ → ℝ) (n : ℕ) :
-  walshInnerProduct (λ x => f x + g x) n = walshInnerProduct f n + walshInnerProduct g n := by
-  unfold walshInnerProduct
-  simp
-  rw[← MeasureTheory.integral_add]
-  · simp[add_mul]
-  · sorry
-  · sorry
 
 
 /--
@@ -491,6 +489,10 @@ theorem binaryRepresentationSet_not_zero (n : ℕ ) (h : n >0 )  : binaryReprese
   rw [h] at h_i
   exact Finset.not_mem_empty i h_i
 
+
+theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
+  induction' n using Nat.strong_induction_on with n ih
+  sorry
 /--
 Removing an element from the binary representation set.
 -/
@@ -506,6 +508,7 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
   rw [mem_binaryRepresentationSet_iff N x] at hr
   apply (mem_binaryRepresentationSet_iff (N - 2 ^ M) x).mpr ?h.mp.intro.a
   apply Nat.testBit_implies_ge at hr
+
   sorry
   /- maybe useful in the future apply Nat.size_le -/
   sorry
@@ -528,34 +531,24 @@ theorem remove_bit1 (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRe
   sorry
 
 
-theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
- /- apply Nat.eq_of_testBit_eq
-  --simp[binaryRepresentationSet]
-  have h1 (k m : ℕ ) : (2 ^ k).testBit m = True ↔ m= k:= by sorry
- -- have h1 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = ∑ k ∈ binaryRepresentationSet n,((2 ^ k).testBit i) := sorry
-  intro i
-  have h2 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = True ↔ i ∈ binaryRepresentationSet n := sorry
-  by_cases h : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i
-  · rw[h]
-    sorry
-  · sorry-/
-  induction' n using Nat.strong_induction_on with n ih
 
-  sorry
 
 
 
 
 
 theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j > k, j ∉ binaryRepresentationSet n := by
-  /-have h0 : (binaryRepresentationSet n).Nonempty := by
+  have h0 : (binaryRepresentationSet n).Nonempty := by
     apply binaryRepresentationSet_not_zero at h
-    exact Finset.nonempty_iff_ne_empty.mpr h-/
-  have h1 :  ∃ a, Finset.max (binaryRepresentationSet n )= a := by
-    exact exists_eq'
+    exact Finset.nonempty_iff_ne_empty.mpr h
+  have h1 :  ∃ (a : ℕ), Finset.max (binaryRepresentationSet n )= a := by
+    apply Finset.max_of_nonempty h0
   obtain ⟨ a , ha ⟩ := h1
   have h2 (k :ℕ ): ∀ j > k, j ∉ binaryRepresentationSet n ↔ ∀ j ∈  binaryRepresentationSet n, j≤ k := by
     sorry
+  have h : a ∈ binaryRepresentationSet n := sorry
+  use a, h
+
   sorry
 
 theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by sorry

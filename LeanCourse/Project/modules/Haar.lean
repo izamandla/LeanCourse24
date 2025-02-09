@@ -213,7 +213,7 @@ theorem haarFunctionScaled_outside_zero_one {k n : ℤ } {x : ℝ}
         rw[mul_comm, ← mul_assoc]
         have : (2 ^ k : ℝ )* (2 ^ k)⁻¹  = 1 := by
           refine CommGroupWithZero.mul_inv_cancel (2 ^ k) ?_
-          refine zpow_ne_zero_of_ne_zero k ?_
+          refine zpow_ne_zero k ?_
           simp
         rw[this]
         linarith
@@ -399,7 +399,6 @@ def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
 
 
 
-
 @[simp]
 theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   rademacherFunction k t = 0 := by
@@ -416,37 +415,6 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   apply haarFunctionScaled_outside_zero_one h hk (Int.ofNat_zero_le l)
   simp
   exact_mod_cast h1
-
-theorem rademacherFunction_sqr (k  : ℕ) (t : ℝ) (h1 : t ≥ 0 )( h2: t < 1)  : rademacherFunction k t * rademacherFunction k t = 1 := by
-  unfold rademacherFunction
-  ring_nf
-  have h : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-↑k) (↑x) t) ^ 2 = (∑ x ∈ Finset.range (2 ^ k), (haarFunctionScaled (-↑k) (↑x) t) ^ 2) := by
-    sorry
-  have h0 : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-k) (x) t ^ 2) = 2^(-k  : ℤ )^2:= by
-    sorry
-
-  rw[h, h0]
-
-
-  sorry
-
-/--
-Orthogonality of Rademacher functions.
--/
-theorem rademacherFunction_orthogonal (k m : ℕ)  : ∫ x in Set.Ico 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
-  by_cases h : k = m
-  · simp[h]
-
-    sorry
-  sorry
-
-
-/--
-The integral of squere of Rademacher function over `[0,1)` equals 1.
--/
-theorem rademacherFunction_normalization (k : ℕ) :
-  ∫ x in Set.Icc 0 1, (rademacherFunction k x)^2 = 1 := by
-  sorry
 
 
 end Haar

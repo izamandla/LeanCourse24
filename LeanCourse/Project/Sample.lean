@@ -550,3 +550,47 @@ theorem haarFunctionScaled_specific (k n : ℕ) (x : ℝ) (h : n * 2 ^ k ≤ x �
     sorry
   sorry
 -/
+
+/- theorem rademacherFunction_sqr (k  : ℕ) (t : ℝ) (h1 : t ≥ 0 )( h2: t < 1)  : rademacherFunction k t * rademacherFunction k t = 1 := by
+  unfold rademacherFunction
+  ring_nf
+  have h : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-↑k) (↑x) t) ^ 2 = (∑ x ∈ Finset.range (2 ^ k), (haarFunctionScaled (-↑k) (↑x) t) ^ 2) := by
+
+    sorry
+  have h0 : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-k) (x) t ^ 2) = 2^(-k  : ℤ )^2:= by
+    sorry
+
+  rw[h, h0]
+
+
+  sorry
+
+/--
+Orthogonality of Rademacher functions.
+-/
+theorem rademacherFunction_orthogonal (k m : ℕ)  : ∫ x in Set.Ico 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
+  by_cases h : k = m
+  · simp[h]
+
+    sorry
+  sorry
+
+
+/--
+The integral of squere of Rademacher function over `[0,1)` equals 1.
+
+theorem rademacherFunction_normalization (k : ℕ) :
+  ∫ x in Set.Icc 0 1, (rademacherFunction k x)^2 = 1 := by
+  sorry
+
+theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
+ apply Nat.eq_of_testBit_eq
+  --simp[binaryRepresentationSet]
+  have h1 (k m : ℕ ) : (2 ^ k).testBit m = True ↔ m= k:= by sorry
+ -- have h1 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = ∑ k ∈ binaryRepresentationSet n,((2 ^ k).testBit i) := sorry
+  intro i
+  have h2 (i : ℕ ) : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i = True ↔ i ∈ binaryRepresentationSet n := sorry
+  by_cases h : (∑ k ∈ binaryRepresentationSet n, 2 ^ k).testBit i
+  · rw[h]
+    sorry
+  · sorry-/
