@@ -3,8 +3,7 @@
 Please fill out the following. Fill in the project topic once you have decided.
 ```
 First & last name: Izabela Mandla
-Project topic:
-Partner (optional):
+Project topic: Haar, Rademacher and Walsh functions - preparation for proving the Walsh analogue of the Carleson-Hunt theorem using the Linearized Metric Carleson theorem.
 ```
 
 ## Your own project
