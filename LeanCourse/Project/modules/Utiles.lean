@@ -35,6 +35,7 @@ theorem kernel_two_pow (m : ℕ) (x y : ℝ) : kernel (2^m) x y = 1 + ∑ n in F
 
 end Kernel
 
+/- **ToDo** : Connect the facts about scaled Haar, Rademacher and Walsh functions with dyadic structures. -/
 
 /--
 Relation between Haar function and Walsh functions.

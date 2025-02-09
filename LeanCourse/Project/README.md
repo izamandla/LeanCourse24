@@ -6,6 +6,7 @@ First & last name: Izabela Mandla
 Project topic: Haar, Rademacher and Walsh functions - preparation for proving the Walsh analogue of the Carleson-Hunt theorem using the Linearized Metric Carleson theorem.
 ```
 
+
 ## Your own project
 
 During the second half of the course you will work on a project in any area of mathematics of your choice. You can put your project files in this folder.

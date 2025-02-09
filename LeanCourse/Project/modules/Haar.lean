@@ -32,7 +32,7 @@ theorem haarFunction_right_half (x : ℝ) (h : 1 / 2 ≤ x ∧ x < 1) : haarFunc
   linarith
 
 /--
-Haar function is 0 outisde`[0,1)`.
+Haar function is zero outisde `[0,1)`.
 -/
 @[simp]
 theorem haarFunction_outside (x : ℝ) (h : x < 0 ∨ x ≥ 1) : haarFunction x = 0 := by
@@ -54,6 +54,9 @@ theorem haarFunction_outside (x : ℝ) (h : x < 0 ∨ x ≥ 1) : haarFunction x 
   contradiction
   linarith
 
+/--
+Square of the Haar function is equal to one.
+-/
 @[simp]
 theorem haar_sqr (x : ℝ): (haarFunction x)^2 = if 0 ≤ x ∧ x < 1 then 1 else 0 := by
   split_ifs with h
@@ -127,7 +130,7 @@ theorem haar_integral_sqr : ∫ x in Set.Ico 0 1, (haarFunction x) ^ 2 = 1 := by
 
 
 /--
-Definition of caled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
+Definition of scaled Haar function `h_I(x)` for dyadic interval `I = [2^k n, 2^k (n+1))`.
 -/
 def haarFunctionScaled (k n : ℤ ) (x : ℝ) : ℝ :=
   2^((-k / 2) : ℝ) * haarFunction (2^(-k) * x - n)
@@ -219,7 +222,9 @@ theorem haarFunctionScaled_outside_zero_one {k n : ℤ } {x : ℝ}
         linarith
     exact Preorder.le_trans 1 ((2 ^ k)⁻¹ * (x - 1) + 1) ((2 ^ k)⁻¹ * x - ↑n) h2 h1
 
-
+/--
+Product of scaled Haar functions of the same `k` and different `n, n'` equals 0.
+-/
 
 theorem haarFunctionScaled_mul{k n n' : ℤ } (x :ℝ ) (h_diff : n ≠ n') : haarFunctionScaled k n x  * haarFunctionScaled k n' x = 0 := by
   by_cases h: 2 ^ (-k) * x - n < 0 ∨ 2 ^ (-k) * x - n ≥ 1
@@ -256,7 +261,7 @@ theorem haarFunctionScaled_mul{k n n' : ℤ } (x :ℝ ) (h_diff : n ≠ n') : ha
           exact h_diff h_12
 
 /--
-Orthogonality of scaled Haar functions on intervals of the same length.
+Integral of product of scaled Haar functions of the same `k` and different `n, n'` equals 0.
 -/
 theorem haarFunctionScaled_orthogonal {k n n' : ℤ } (h_diff : n ≠ n') : ∫ x in Set.Ico 0 1, haarFunctionScaled k n x * haarFunctionScaled k n' x = 0 := by
   simp [haarFunctionScaled_mul _ h_diff]
@@ -264,7 +269,7 @@ theorem haarFunctionScaled_orthogonal {k n n' : ℤ } (h_diff : n ≠ n') : ∫ 
 
 
 /--
-The square of the scaled Haar function is `2^k` within its support and `0` outside.
+The square of the scaled Haar function is `2^k` in `[2^k n, 2^k (n+1))` and `0` outside.
 -/
 @[simp]
 theorem haarFunctionScaled_sqr (k n : ℤ ) (x : ℝ) (h1 : 0 ≤ 2 ^ (-k) * x - n) (h2 :2 ^ (-k) * x - n < 1) : (haarFunctionScaled k n x) ^ 2 = 2^(-k):= by
@@ -292,7 +297,7 @@ theorem haarFunctionScaled_sqr (k n : ℤ ) (x : ℝ) (h1 : 0 ≤ 2 ^ (-k) * x -
       linarith
 
 /--
-Product of scaled Haar functions on the same interval.
+Product of scaled Haar functions is 0 outside `[2^k n, 2^k (n+1))`.
 -/
 
 theorem haarFunction_product0 (k n : ℤ ) (x y : ℝ) (h:  2 ^ (-k) * x - ↑n < 0 ∨ 1≤  2 ^ (-k) * x - ↑n): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 0 := by
@@ -304,6 +309,10 @@ theorem haarFunction_product0' (k n : ℤ ) (x y : ℝ) (h:  2 ^ (-k) * y - ↑n
   rw[mul_comm]
   apply haarFunction_product0
   exact h
+
+/--
+Product of scaled Haar functions is `2^(-k)` on left half of `[2^k n, 2^k (n+1))`.
+-/
 
 theorem haarFunction_product1 (k n : ℤ ) (x y : ℝ) (h1: 0 ≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1/2) (h3: 0 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1/2): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 2^(-k) := by
   rw[haarFunctionScaled_left_half ,haarFunctionScaled_left_half]
@@ -317,6 +326,10 @@ theorem haarFunction_product1 (k n : ℤ ) (x y : ℝ) (h1: 0 ≤ 2 ^ (-k) * x -
   · exact h4
   · exact h1
   · exact h2
+
+/--
+Product of scaled Haar functions is `2^(-k)` on right half of `[2^k n, 2^k (n+1))`.
+-/
 
 theorem haarFunction_product2 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1) (h3: 1/2 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1): haarFunctionScaled k n x  * haarFunctionScaled k n y  = 2^(-k) := by
   rw[haarFunctionScaled_right_half ,haarFunctionScaled_right_half]
@@ -332,6 +345,9 @@ theorem haarFunction_product2 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x 
   · exact h1
   · exact h2
 
+/--
+Product of scaled Haar functions is `-2^(-k)` when one takes values from right half and the second one takes values from left half of `[2^k n, 2^k (n+1))`
+-/
 
 theorem haarFunction_product3 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x - ↑n)(h2: 2 ^ (-k) * x - ↑n<1) (h3: 0 ≤ 2 ^ (-k) * y - ↑n )(h4:2 ^ (-k) * y - ↑n<1/2): haarFunctionScaled k n x  * haarFunctionScaled k n y  = -2^(-k) := by
   rw[haarFunctionScaled_right_half ,haarFunctionScaled_left_half]
@@ -350,7 +366,7 @@ theorem haarFunction_product3 (k n : ℤ ) (x y : ℝ) (h1: 1/2≤ 2 ^ (-k) * x 
 
 
 /--
-The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals `2^k`.
+The integral of squere of scaled Haar function over `[2^k n, 2^k (n+1))` equals `1`.
 -/
 theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ), (haarFunctionScaled k n x)^2 = 1 := by
   have h : EqOn (fun (x) ↦ haarFunctionScaled k n x ^ 2) (2 ^ (-k))  (Set.Ico (2^k*n : ℝ) (2^k*(n+1) : ℝ)):= by
@@ -398,6 +414,9 @@ def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
 
 
 
+/--
+Rademacher function is zero outisde `[0,1)`.
+-/
 
 @[simp]
 theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
@@ -416,5 +435,5 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   simp
   exact_mod_cast h1
 
-
+/- **ToDo** : Prove statements about product of Rademacher functions and its integrals. -/
 end Haar

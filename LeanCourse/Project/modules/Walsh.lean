@@ -36,7 +36,7 @@ theorem walsh_not_in {n : ℕ} (x : ℝ) (h : x < 0 ∨  1 ≤ x ) : walsh n x =
   simp[h]
 
 /--
-Special case: Walsh function for n=0 is 1 on `[0,1)`.
+Walsh function for `n=0` is 1 on `[0,1)`.
 -/
 @[simp]
 theorem walsh_zero (x : ℝ) (h1 :0 ≤ x) (h2: x <1 ) : walsh 0 x = 1 := by
@@ -44,7 +44,7 @@ theorem walsh_zero (x : ℝ) (h1 :0 ≤ x) (h2: x <1 ) : walsh 0 x = 1 := by
 
 
 /--
-Special case: Walsh function for n=1.
+Walsh function for `n=1` is 1 on the left half of `[0,1)`.
 -/
 @[simp]
 theorem walsh_one_left (x : ℝ) (h1 :0 ≤ x) (h2: x < 1/2 ) : walsh 1 x =  1:= by
@@ -69,6 +69,9 @@ theorem walsh_one_left (x : ℝ) (h1 :0 ≤ x) (h2: x < 1/2 ) : walsh 1 x =  1:=
     push_neg at h_1 h_4
     linarith
 
+/--
+Walsh function for `n=1` is 1 on the right half of `[0,1)`.
+-/
 
 @[simp]
 theorem walsh_one_right (x : ℝ) (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh 1 x = -1:= by
@@ -98,7 +101,7 @@ theorem walsh_one_right (x : ℝ) (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh 1 x = -1:
 
 
 /--
-Walsh function for n being even.
+Walsh function for n being even on the left half of `[0,1)`.
 -/
 theorem walsh_even_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2*n) x = walsh n (2 * x) := by
   conv_lhs =>
@@ -125,7 +128,9 @@ theorem walsh_even_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (
     simp_all
     linarith
 
-
+/--
+Walsh function for n being even on the right half of `[0,1)`.
+-/
 theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh (2*n) x = walsh n (2 * x - 1) := by
   conv_lhs =>
     unfold walsh
@@ -153,8 +158,9 @@ theorem walsh_even_right {n : ℕ}{x : ℝ}  (h1 :1/2 ≤ x) (h2: x < 1 ) : wals
 
 
 /--
-Walsh function for n being odd.
+Walsh function for n being odd on the left half of `[0,1)`.
 -/
+
 
 theorem walsh_odd_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2*n +1) x = walsh n (2 * x) := by
   conv_lhs =>
@@ -186,6 +192,11 @@ theorem walsh_odd_left {n : ℕ}{x : ℝ}(h1 :0 ≤ x) (h2: x < 1/2 ) : walsh (2
     rw[h_odd]
     simp_all
     linarith
+
+/--
+Walsh function for n being odd on the right half of `[0,1)`.
+-/
+
 
 theorem walsh_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) : walsh (2*n+ 1) x =- walsh n (2 * x - 1) := by
   conv_lhs =>
@@ -229,10 +240,8 @@ theorem walsh_even_odd_right {n : ℕ}{x : ℝ} (h1 :1/2 ≤ x) (h2: x < 1 ) :wa
   rw[ walsh_even_right h1 h2, walsh_odd_right h1 h2]
   simp
 
---Nat.Bit
-
 /--
-Walsh functions are nonzero on `[0,1)`
+Walsh functions are nonzero on `[0,1)`.
 -/
 theorem walsh_in (n : ℕ) (x : ℝ): ∀ x : ℝ, 0 ≤ x ∧  x < 1 → walsh n x ≠ 0 := by
   induction' n using Nat.strong_induction_on with n ih
@@ -337,39 +346,35 @@ simp [walsh, h]
 
 
 
+theorem walsh_values {n : ℕ} {x : ℝ} (h1 : 0 ≤ x)(h2: x < 1) : walsh n x = 1 ∨ walsh n x =-1 := by
+  sorry
+
 /--
-Multiplying Wlash functions of fixed `n` and different arguments.
+Product of Wlash functions of fixed `n` and different arguments is 0 outside `[0, 1)`.
 -/
 theorem mul_walsh_outside {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n x)*(walsh n y ) =  0:= by
   rw[walsh_not_in]
   simp
   exact  h
 
+
 theorem mul_walsh_outside' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (walsh n y )*(walsh n x) =  0:= by
   rw[mul_comm, mul_walsh_outside]
   exact  h
 
-/--
-General multiplying Walsh functions.
--/
+
+/--**ToDo** : Prove the statement about the product of Wlash functions of fixed `n` and different arguments in `[0, 1)`-/
 theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
   sorry
 
 /--
-Multiplying Wlash functions of fixed `n` and same arguments.
+Squere of Wlash functions is 1 on `[0,1).`
 -/
+
 theorem sqr_walsh {n : ℕ} (x : ℝ) (h1 : 0 ≤ x)(h2: x < 1) : (walsh n x)*(walsh n x) = 1 := by
-  rw[mul_walsh]
-  simp
-  split_ifs with h_1 h_2
-  · exfalso
-    obtain h_l1|h_r1 :=h_1
-    · linarith
-    · linarith
-  · rfl
-  · exfalso
-    push_neg at h_1 h_2
-    linarith
+  rw[mul_self_eq_one_iff]
+  apply walsh_values h1 h2
+
 
 /--
 Walsh inner product definition.
@@ -377,11 +382,11 @@ Walsh inner product definition.
 def walshInnerProduct (f : ℝ → ℝ) (n : ℕ) : ℝ :=
   ∫ x in Set.Ico 0 1, f x * walsh n x
 
+
+
 /--
-Walsh functions are orthogonal.
+`n`th Walsh inner product of walsh function of `m` is equal to the `m`th Walsh inner product of walsh function of `n`.
 -/
-
-
 theorem walshInnermul {n m : ℕ}  : walshInnerProduct (walsh n) m = walshInnerProduct (walsh m) n := by
   simp[walshInnerProduct]
   have h1 : EqOn ((walsh n)*(walsh m)) ((walsh m)*(walsh n))  (Set.Ico 0 (1:ℝ)):= by
@@ -392,20 +397,7 @@ theorem walshInnermul {n m : ℕ}  : walshInnerProduct (walsh n) m = walshInnerP
   change ∫ (x : ℝ) in Ico 0 1, (walsh n * walsh m) x = ∫ (x : ℝ) in Ico 0 1, (walsh m * walsh n) x
   rw[MeasureTheory.setIntegral_congr h2 h1]
 
-theorem walsh_orthogonalityhelp {n m : ℕ} (h : n < m) : walshInnerProduct (walsh n) m = 0 := by
-  simp[walshInnerProduct]
 
-  sorry
-
-
-theorem walsh_orthogonality {n m : ℕ} (h : n ≠ m) : walshInnerProduct (walsh n) m = 0 := by
-  by_cases h1: n<m
-  · apply walsh_orthogonalityhelp h1
-  · push_neg at h1
-    have h2 : m< n := by
-      exact Nat.lt_of_le_of_ne h1 (id (Ne.symm h))
-    rw[walshInnermul]
-    apply walsh_orthogonalityhelp h2
 
 /--
 Walsh functions have norm 1.
@@ -466,19 +458,9 @@ Binary representation of a number as a set of indices.
 def binaryRepresentationSet (n : ℕ) : Finset ℕ :=
   Finset.filter (λ m => Nat.testBit n m) (Finset.range (Nat.size n + 1))
 
-
-
-/--
-Binary representation set of `0` is empty.
--/
-
-theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
-  simp [binaryRepresentationSet, Nat.testBit_zero]
-
 /--
 Condition for being in the binary representation set.
 -/
-
 theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   m ∈ binaryRepresentationSet n ↔ (Nat.testBit n m = true) := by
   simp [binaryRepresentationSet, Finset.mem_filter, Finset.mem_range]
@@ -486,6 +468,18 @@ theorem mem_binaryRepresentationSet_iff (n m : ℕ) :
   apply m.testBit_implies_ge at h
   rw [ge_iff_le, ← m.lt_size] at h
   linarith
+
+
+/--
+Binary representation set of `0` is empty.
+-/
+theorem binaryRepresentationSet_zero : binaryRepresentationSet 0 = ∅ := by
+  simp [binaryRepresentationSet, Nat.testBit_zero]
+
+
+/--
+Binary representation set of `n>0` is nonempty.
+-/
 
 theorem binaryRepresentationSet_not_zero (n : ℕ ) (h : n >0 )  : binaryRepresentationSet n ≠  ∅ := by
   rw[gt_iff_lt, ← Nat.ne_zero_iff_zero_lt] at h
@@ -518,12 +512,17 @@ theorem remove_bit (N M : ℕ) (h : M ∈ binaryRepresentationSet N) : binaryRep
     sorry
   · sorry
 
+/--
+Natural number can be written using the sum of two to the power of element of binary representation set.
+-/
 
 theorem binaryRepresentationSet_explicit (n :ℕ ) : ∑ k in binaryRepresentationSet n, 2^k = n := by
   induction' n using Nat.strong_induction_on with n ih
   sorry
 
-
+/--
+Binary representation set has maximal element.
+-/
 
 theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j > k, j ∉ binaryRepresentationSet n := by
   have h0 : (binaryRepresentationSet n).Nonempty := by
@@ -539,6 +538,9 @@ theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRe
   intro j hj
   exact Finset.not_mem_of_max_lt hj ha
 
+/--
+Binary representation set has minimal element.
+-/
 theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by
   have h0 : (binaryRepresentationSet n).Nonempty := by
     apply binaryRepresentationSet_not_zero at h
