@@ -109,7 +109,9 @@ theorem scale_up {k n : ℤ} : dyadicInterval k n = { x | (2^(k-1) : ℝ)*(2*n) 
 
 
 
-/-- A dyadic interval can be split into two smaller dyadic intervals. --/
+/--
+A dyadic interval can be split into two smaller dyadic intervals.
+-/
 theorem dyadicInterval_split (k n : ℤ) :
   dyadicInterval k n = dyadicInterval (k - 1) (2 * n) ∪ dyadicInterval (k - 1) (2 * n + 1) := by
   rw[scale_up, intervalform_dyadicInterval, intervalform_dyadicInterval]
@@ -262,7 +264,9 @@ theorem dyadic_intervals_relation {k k' n n' : ℤ} (h : k < k') :
 
 
 
-/-- Theorem: Two dyadic intervals are either disjoint or one is contained in the other. --/
+/--
+Theorem: Two dyadic intervals are either disjoint or one is contained in the other.
+-/
 theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   (dyadicInterval k n ∩ dyadicInterval k' n' = ∅) ∨
   (dyadicInterval k n ⊆ dyadicInterval k' n') ∨
@@ -285,15 +289,21 @@ theorem dyadic_intervals_disjoint_or_contained (k k' n n' : ℤ) :
   apply dyadic_intervals_relation h_lt
 
 
-/-- A dyadic rectangle is the Cartesian product of two dyadic intervals. --/
+/--
+A dyadic rectangle is the Cartesian product of two dyadic intervals.
+-/
 def dyadicRectangle (k n k' n' : ℤ) : Set (ℝ × ℝ)  :=
   (dyadicInterval k n).prod (dyadicInterval k' n')
 
-/-- Collection of dyadic intervals at a fixed scale.--/
+/--
+Collection of dyadic intervals at a fixed scale.
+-/
 def SetDyadicIntervals (m : ℕ) : Set (Set ℝ) :=
   {dyadicInterval (-m) n | n ∈ Finset.range (2^m)}
 
-/- Tile-/
+/--
+Tile.
+-/
 def Tile (I : Set ℝ) (ω : Set ℝ) : Prop :=
   ∃ k n : ℤ, I = dyadicInterval k n ∧ ω = {x | x = 2^(-k)}
 

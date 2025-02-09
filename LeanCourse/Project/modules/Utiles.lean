@@ -42,9 +42,30 @@ Relation between Haar function and Walsh functions.
 -/
 
 theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
-  --rw[Walsh.walsh_one]
   simp[Haar.haarFunction]
-  sorry --potrzebny dowód by_cases
+  split_ifs with h1 h2
+  · obtain ⟨ hl, hr⟩ := h1
+    apply Walsh.walsh_one_left
+    · exact hl
+    · norm_num at hr
+      exact hr
+  · obtain ⟨ hl, hr⟩ := h2
+    apply Walsh.walsh_one_right
+    · norm_num at hl
+      exact hl
+    · exact hr
+  · apply Walsh.walsh_not_in
+    simp_all only [not_and_or]
+    push_neg at h1
+    push_neg at h2
+    obtain hl1|hr1 := h1
+    · left
+      linarith
+    · obtain hl2|hr2 := h2
+      · exfalso
+        linarith
+      · right
+        linarith
 
 /--
 Walsh functions expressed using products of Rademacher functions.
@@ -71,7 +92,6 @@ theorem walshRademacherRelationresult {M N : ℕ} (h : 2^M ≤ N) (x : ℝ) :
     unfold Walsh.binaryRepresentationSet
     sorry
     sorry
-  --unfold binaryRepresentationSet
   sorry
 
 
@@ -81,7 +101,7 @@ theorem fun_change_partial_sum (M N : ℕ) (f : ℝ → ℝ) (x : ℝ ) : Haar.r
 /- ## Additional lemmas needed for the main result -/
 
 /--
-Lemma 3.1 (part 1).
+Lemma 1
 -/
 theorem lemma1_1 (M N : ℕ) (h1 : 2^M ≤ N)(h2: N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
   Walsh.walshFourierPartialSum f (2^M) x =
@@ -89,7 +109,7 @@ theorem lemma1_1 (M N : ℕ) (h1 : 2^M ≤ N)(h2: N < 2^(M+1)) (f : ℝ → ℝ)
   sorry
 
 /--
-Lemma 3.1 (part 2).
+Lemma 2
 -/
 theorem lemma1_2 (M N : ℕ) (h1 : 2^M ≤ N)(h2: N < 2^(M+1))(f : ℝ → ℝ) (x : ℝ) :
   Walsh.walshFourierPartialSum f (2^M) x =
@@ -98,10 +118,9 @@ theorem lemma1_2 (M N : ℕ) (h1 : 2^M ≤ N)(h2: N < 2^(M+1))(f : ℝ → ℝ) 
   sorry
   sorry
   sorry
--- te lematy na górze można przepisać tak żeby były spójne z tym późniejszym
 
 /--
-Lemma 3.2
+Lemma 3
 -/
 theorem lemma2 (M N N' : ℕ) (h1 : 2^M ≤ N ∧ N < 2^(M+1)) (h2 : N' = N - 2^M)
   (f : ℝ → ℝ) (x : ℝ) :
