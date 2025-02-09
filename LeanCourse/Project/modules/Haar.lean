@@ -80,25 +80,26 @@ theorem haar_sqr (x : ℝ): (haarFunction x)^2 = if 0 ≤ x ∧ x < 1 then 1 els
 The integral of Haar function over `[0,1)` equals 0.
 -/
 
---@[simp]
+@[simp]
 theorem haar_integral : ∫ x in Set.Ico 0 1, haarFunction x = 0 := by
   have hs : MeasurableSet (Set.Ico 0 (1/2 : ℝ )) := by
     simp
   have ht : MeasurableSet (Set.Ico (1/2 : ℝ ) 1) := by
+    simp
+  have hone : IntegrableOn (fun x : ℝ => (1 : ℝ )) (Set.Ico (0 :ℝ ) (1/2 : ℝ)) volume:=by
+    simp
+  have hmone : IntegrableOn (fun x : ℝ => (-1 : ℝ )) (Set.Ico (1/2 : ℝ) (1 :ℝ)) volume:=by
     simp
   have h_left : EqOn (haarFunction) 1  (Ico 0 (1/2)):= by
     apply haarFunction_left_half
   have h_right: EqOn (haarFunction) (-1)  (Ico (1/2) 1) := by
     apply haarFunction_right_half
   have h1: MeasureTheory.IntegrableOn haarFunction (Set.Ico 0 (1/2)) := by
-    apply MeasureTheory.IntegrableOn.congr_fun
-
-    sorry
-    sorry
-    sorry
-    sorry
+    rw[Set.eqOn_comm] at h_left
+    apply MeasureTheory.IntegrableOn.congr_fun hone h_left hs
   have h2: MeasureTheory.IntegrableOn haarFunction (Set.Ico (1/2) 1) := by
-    sorry
+    rw[Set.eqOn_comm] at h_right
+    apply MeasureTheory.IntegrableOn.congr_fun hmone h_right ht
   have h : Disjoint (Set.Ico (0 : ℝ ) (1/2)) (Set.Ico (1/2) 1) := by
     simp
   have h0 : Set.Ico (0 : ℝ ) 1 = Set.Ico 0 (1/2) ∪ Set.Ico (1/2) 1 := by
@@ -175,11 +176,11 @@ theorem haarFunctionScaled_outside (k n : ℤ ) (x : ℝ)
 
 
 /--
-Scaled Haar function of positive `k` and `n ∈ {0,...,2^k -1}` is 0 outside `[0,1)`.
+Scaled Haar function of non positive `k` and `n ∈ {0,...,2^(-k) -1}` is 0 outside `[0,1)`.
 -/
 @[simp]
-theorem haarFunctionScaled_outside_zero_one {k n : ℕ  } {x : ℝ}
-  (h : x < 0 ∨ x≥ 1)(hn1 : n ≥ 0)(hn2: n ≤ (2^(-k : ℤ ) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
+theorem haarFunctionScaled_outside_zero_one {k n : ℤ } {x : ℝ}
+  (h : x < 0 ∨ x≥ 1)(hk: k ≤ 0)(hn1 : n ≥ 0)(hn2: n ≤ (2^(-k : ℤ ) -1 : ℝ ))  : haarFunctionScaled k n x = 0 := by
   apply haarFunctionScaled_outside
   rw[zpow_neg ] at hn2
   simp
@@ -190,7 +191,10 @@ theorem haarFunctionScaled_outside_zero_one {k n : ℕ  } {x : ℝ}
       apply mul_neg_of_neg_of_pos
       · linarith
       · simp
+        refine zpow_pos_of_pos ?hb.ha k
+        linarith
     apply lt_of_lt_of_le this
+    simp
     linarith
   · right
     have h1 :  (2 ^ k)⁻¹ * (x-1) +1 ≤  (2 ^ k)⁻¹ * x - ↑n := by
@@ -200,7 +204,19 @@ theorem haarFunctionScaled_outside_zero_one {k n : ℕ  } {x : ℝ}
       exact hn2
     have h2 : 1 ≤   (2 ^ k)⁻¹ * (x-1) +1 := by
       simp
-      linarith
+      ring_nf
+      simp
+      rw[← mul_one (2 ^ k)⁻¹]
+      refine (inv_mul_le_iff₀' ?hc).mpr ?_
+      · refine zpow_pos_of_pos ?hb.ha k
+      · simp
+        rw[mul_comm, ← mul_assoc]
+        have : (2 ^ k : ℝ )* (2 ^ k)⁻¹  = 1 := by
+          refine CommGroupWithZero.mul_inv_cancel (2 ^ k) ?_
+          refine zpow_ne_zero_of_ne_zero k ?_
+          simp
+        rw[this]
+        linarith
     exact Preorder.le_trans 1 ((2 ^ k)⁻¹ * (x - 1) + 1) ((2 ^ k)⁻¹ * x - ↑n) h2 h1
 
 
@@ -378,7 +394,7 @@ theorem haarFunctionScaled_normalization (k n : ℤ ) : ∫ x in Set.Ico (2^k*n 
 Definition of the Rademacher function `r_n(x)`.
 -/
 def rademacherFunction (k : ℕ) (t : ℝ) : ℝ :=
-  2^(- k / 2 : ℝ ) * ∑ n in Finset.range k, haarFunctionScaled k n t
+  2^(- k / 2 : ℝ ) * ∑ n in Finset.range (2^k), haarFunctionScaled (-k) n t
 
 
 
@@ -391,17 +407,37 @@ theorem rademacherFunction_outside (k : ℕ) (t : ℝ) (h : t < 0 ∨ t ≥ 1) :
   apply mul_eq_zero_of_right
   apply Finset.sum_eq_zero
   intro l hl
-  have h1 : 0 ≤ l := by
+  have h1 : l ≤ (2^(k : ℕ  ) : ℤ   )-1 := by
+    simp[Finset.range] at hl
+    refine Int.le_sub_one_of_lt ?H
+    exact_mod_cast hl
+  have hk : (-k : ℤ ) ≤ 0 := by
     simp
-  have h2 : l ≤ (2^(k : ℤ ) : ℝ  )-1 := by sorry
-  --apply haarFunctionScaled_outside_zero_one h h1 h2
-  --ewidentnie coś nie działa
+  apply haarFunctionScaled_outside_zero_one h hk (Int.ofNat_zero_le l)
+  simp
+  exact_mod_cast h1
 
+theorem rademacherFunction_sqr (k  : ℕ) (t : ℝ) (h1 : t ≥ 0 )( h2: t < 1)  : rademacherFunction k t * rademacherFunction k t = 1 := by
+  unfold rademacherFunction
+  ring_nf
+  have h : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-↑k) (↑x) t) ^ 2 = (∑ x ∈ Finset.range (2 ^ k), (haarFunctionScaled (-↑k) (↑x) t) ^ 2) := by
+    sorry
+  have h0 : (∑ x ∈ Finset.range (2 ^ k), haarFunctionScaled (-k) (x) t ^ 2) = 2^(-k  : ℤ )^2:= by
+    sorry
+
+  rw[h, h0]
+
+
+  sorry
 
 /--
 Orthogonality of Rademacher functions.
 -/
-theorem rademacherFunction_orthogonal (k m : ℕ) : ∫ x in Set.Ico 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
+theorem rademacherFunction_orthogonal (k m : ℕ)  : ∫ x in Set.Ico 0 1, rademacherFunction k x * rademacherFunction m x = if k = m then 1 else 0 := by
+  by_cases h : k = m
+  · simp[h]
+
+    sorry
   sorry
 
 
