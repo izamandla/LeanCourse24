@@ -367,6 +367,8 @@ theorem mul_walsh_outside' {n : ℕ} (x y : ℝ ) (h : x <0 ∨  1 ≤  x) : (wa
 theorem mul_walsh {n : ℕ} (x y : ℝ ): (walsh n x)*(walsh n y ) =  (if (x <0 ∨  1 ≤  x) ∨ (y <0 ∨  1 ≤  y) then 0 else if (x < 0.5 ∧ y < 0.5) ∨ (x ≥  0.5 ∧ y ≥ 0.5) then 1 else -1) := by
   sorry
 
+
+
 /--
 Squere of Wlash functions is 1 on `[0,1).`
 -/
@@ -415,6 +417,16 @@ theorem walsh_norm (n : ℕ) :
   change ∫ (x : ℝ) in Ico 0 1, (walsh n * walsh n) x = 1
   rw[MeasureTheory.setIntegral_congr hs h1]
   simp
+
+/-- Walsh functions are orthogonal.-/
+theorem walsh_ort_same {n m : ℕ} (h: m = n) : walshInnerProduct (walsh n) m  = 1 := by
+  rw [h]
+  apply walsh_norm
+
+
+theorem walsh_ort_dif {n m : ℕ} (h: m ≠  n) : walshInnerProduct (walsh n) m  = 0 := by
+
+  sorry
 
 
 /--

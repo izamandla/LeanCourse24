@@ -67,13 +67,23 @@ theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
       · right
         linarith
 
+
+
+theorem walshRadhelp (n : ℕ) (x : ℝ) : 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x =  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction (m+1) x := by
+  have h : 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x = ∏ m in Walsh.binaryRepresentationSet n , 2* Haar.rademacherFunction m x := by
+    sorry
+  sorry
 /--
 Walsh functions expressed using products of Rademacher functions.
 -/
+--potrzebne najpierw twierdzenie, że 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x =  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction (m+1) x
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
+  induction' n using Nat.strong_induction_on with n ih
+  set k := n/2 with h_k
+  by_cases hzero :n = 0
   sorry
-
+  sorry
 /--
 Special case of Walsh-Rademacher relation for powers of two.
 -/
@@ -103,9 +113,11 @@ theorem fun_change_partial_sum (M N : ℕ) (f : ℝ → ℝ) (x : ℝ ) : Haar.r
 /--
 Lemma 1
 -/
+
 theorem lemma1_1 (M N : ℕ) (h1 : 2^M ≤ N)(h2: N < 2^(M+1)) (f : ℝ → ℝ) (x : ℝ) :
   Walsh.walshFourierPartialSum f (2^M) x =
   ∑ k in Finset.range (2^M) , (∫ y in Set.Icc 0 1, f y * Walsh.walsh (2^M) y * (Haar.haarFunctionScaled M k y)  * Walsh.walsh (2^M) x  * (Haar.haarFunctionScaled M k x) ):=
+  --OrthonormalBasis.orthogonalProjection_eq_sum
   sorry
 
 /--
