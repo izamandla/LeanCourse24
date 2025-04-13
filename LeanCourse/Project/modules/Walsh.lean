@@ -553,7 +553,7 @@ theorem max_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRe
 /--
 Binary representation set has minimal element.
 -/
-theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by
+theorem min_binaryRepresentationSet (n : ℕ) (h : n >0 ) : ∃ k ∈  binaryRepresentationSet n, ∀ j < k, j ∉ binaryRepresentationSet n := by
   have h0 : (binaryRepresentationSet n).Nonempty := by
     apply binaryRepresentationSet_not_zero at h
     exact Finset.nonempty_iff_ne_empty.mpr h
@@ -565,6 +565,17 @@ theorem min_binaryRepresentationSet (n : ℕ ) (h : n >0 ) : ∃ k ∈  binaryRe
   use a, h
   intro j hj
   exact Finset.not_mem_of_lt_min hj ha
+
+theorem wlashradhelp0 (n m : ℕ) (x : ℝ) (h: m ∈ Walsh.binaryRepresentationSet n) : (m+1) ∈ Walsh.binaryRepresentationSet (2*n) := by
+  rw[mem_binaryRepresentationSet_iff] at h
+  rw[mem_binaryRepresentationSet_iff]
+  rw[← Nat.testBit_div_two]
+  simp
+  rw[h]
+
+
+
+
 
 
 end Walsh

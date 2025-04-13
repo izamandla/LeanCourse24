@@ -69,14 +69,11 @@ theorem walsh_haar_one (x : ℝ ) : Walsh.walsh 1 x  = Haar.haarFunction x := by
 
 
 
-theorem walshRadhelp (n : ℕ) (x : ℝ) : 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x =  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction (m+1) x := by
-  have h : 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x = ∏ m in Walsh.binaryRepresentationSet n , 2* Haar.rademacherFunction m x := by
-    sorry
-  sorry
+
 /--
 Walsh functions expressed using products of Rademacher functions.
 -/
---potrzebne najpierw twierdzenie, że 2*  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x =  ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction (m+1) x
+
 theorem walshRademacherRelation (n : ℕ) (x : ℝ) :
   Walsh.walsh n x = ∏ m in Walsh.binaryRepresentationSet n , Haar.rademacherFunction m x := by
   induction' n using Nat.strong_induction_on with n ih
